@@ -1,0 +1,28 @@
+version: '3'
+services:
+  db:
+    image: mysql:8.0
+    volumes:
+    - ./build/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    - ./build/mysql/mysql_data:/var/lib/mysql
+    env_file:
+      - .env.local
+    command: mysqld
+
+  app:
+    build:
+      context: .
+      dockerfile: ./build/app/Dockerfile
+    ports:
+      - "1323:1323"
+    entrypoint:
+      - dockerize
+      - -timeout
+      - 60s
+      - -wait
+      - tcp://db:3306
+    env_file:
+      - .env.local
+    depends_on:
+      - db
+    command: ./blog-server
