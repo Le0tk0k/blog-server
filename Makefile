@@ -13,3 +13,7 @@ logs:
 .PHONY: ps
 ps:
 	docker-compose -f docker-compose.local.yml ps
+
+.PHONY: lint
+lint:
+	golangci-lint run --enable=golint,gosec,prealloc,gocognit,goimports
