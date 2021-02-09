@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/gommon/log"
 )
 
-// New はロガーを生成する
+// New はloggerを生成する
 func New() *log.Logger {
 	logger := log.New("application")
 	logger.SetLevel(log.INFO)
