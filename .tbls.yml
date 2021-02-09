@@ -1,0 +1,2 @@
+dsn: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+docPath: db/schema
