@@ -1,11 +1,11 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/Le0tk0k/blog-server/config"
 
+	"github.com/Le0tk0k/blog-server/log"
 	"github.com/Le0tk0k/blog-server/repository"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -16,18 +16,20 @@ import (
 )
 
 func main() {
+	logger := log.New()
+
 	_, err := repository.NewDB()
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	m, err := migrate.New("file://db/migrations", "mysql://"+config.DSN())
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	if err = m.Up(); err != nil && err != migrate.ErrNoChange {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	e := echo.New()
