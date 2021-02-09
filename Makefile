@@ -17,3 +17,7 @@ ps:
 .PHONY: lint
 lint:
 	golangci-lint run --enable=golint,gosec,prealloc,gocognit,goimports
+
+.PHONY: tbls
+tbls:
+	docker run --rm --net=blog-server_default --env-file=.env.local -v $(PWD):/work k1low/tbls doc -f
