@@ -70,5 +70,8 @@ func TestPostRepository_StorePost(t *testing.T) {
 			}
 		})
 	}
-	db.Exec("DELETE FROM posts")
+	_, err := db.Exec("DELETE FROM posts")
+	if err != nil {
+		t.Errorf("cannot delete test data")
+	}
 }
