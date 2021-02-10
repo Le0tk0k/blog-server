@@ -1,24 +1,22 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/Le0tk0k/blog-server/config"
-
 	"github.com/Le0tk0k/blog-server/log"
 	"github.com/Le0tk0k/blog-server/repository"
+	"github.com/Le0tk0k/blog-server/service"
+	"github.com/Le0tk0k/blog-server/web"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/labstack/echo/v4"
 )
 
 func main() {
 	logger := log.New()
 
-	_, err := repository.NewDB()
+	db, err := repository.NewDB()
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -27,14 +25,13 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
-
 	if err = m.Up(); err != nil && err != migrate.ErrNoChange {
 		logger.Fatal(err)
 	}
 
-	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
+	postRepository := repository.NewPostRepository(db)
+	postService := service.NewPostService(postRepository)
+	e := web.NewServer(postService)
+
 	e.Logger.Fatal(e.Start(":1323"))
 }
