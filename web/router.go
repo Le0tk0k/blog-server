@@ -20,6 +20,7 @@ func NewServer(postService service.PostService) *echo.Echo {
 	v1 := e.Group("/v1")
 
 	posts := v1.Group("/posts")
+	posts.GET("", postHandler.GetPosts)
 	posts.POST("", postHandler.CreatePost)
 
 	return e
