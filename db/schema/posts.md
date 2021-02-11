@@ -7,7 +7,7 @@
 
 ```sql
 CREATE TABLE `posts` (
-  `id` int NOT NULL,
+  `id` varchar(255) NOT NULL,
   `title` varchar(255) DEFAULT NULL,
   `content` longtext,
   `slug` varchar(255) DEFAULT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE `posts` (
 
 | Name | Type | Default | Nullable | Extra Definition | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | --------------- | -------- | ------- | ------- |
-| id | int |  | false |  | [posts_tags](posts_tags.md) |  |  |
+| id | varchar(255) |  | false |  | [posts_tags](posts_tags.md) |  |  |
 | title | varchar(255) |  | true |  |  |  |  |
 | content | longtext |  | true |  |  |  |  |
 | slug | varchar(255) |  | true |  |  |  |  |

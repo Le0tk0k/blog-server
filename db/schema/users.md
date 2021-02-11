@@ -7,8 +7,8 @@
 
 ```sql
 CREATE TABLE `users` (
-  `id` int NOT NULL,
-  `email` varchar(64) NOT NULL,
+  `id` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -23,8 +23,8 @@ CREATE TABLE `users` (
 
 | Name | Type | Default | Nullable | Extra Definition | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | --------------- | -------- | ------- | ------- |
-| id | int |  | false |  |  |  |  |
-| email | varchar(64) |  | false |  |  |  |  |
+| id | varchar(255) |  | false |  |  |  |  |
+| email | varchar(255) |  | false |  |  |  |  |
 | password | varchar(255) |  | false |  |  |  |  |
 | created_at | datetime | CURRENT_TIMESTAMP | true | DEFAULT_GENERATED |  |  |  |
 | updated_at | datetime | CURRENT_TIMESTAMP | true | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |  |  |  |

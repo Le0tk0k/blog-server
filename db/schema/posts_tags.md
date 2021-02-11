@@ -7,9 +7,9 @@
 
 ```sql
 CREATE TABLE `posts_tags` (
-  `id` int NOT NULL,
-  `post_id` int NOT NULL,
-  `tag_id` int NOT NULL,
+  `id` varchar(255) NOT NULL,
+  `post_id` varchar(255) NOT NULL,
+  `tag_id` varchar(255) NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -26,9 +26,9 @@ CREATE TABLE `posts_tags` (
 
 | Name | Type | Default | Nullable | Extra Definition | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | --------------- | -------- | ------- | ------- |
-| id | int |  | false |  |  |  |  |
-| post_id | int |  | false |  |  | [posts](posts.md) |  |
-| tag_id | int |  | false |  |  | [tags](tags.md) |  |
+| id | varchar(255) |  | false |  |  |  |  |
+| post_id | varchar(255) |  | false |  |  | [posts](posts.md) |  |
+| tag_id | varchar(255) |  | false |  |  | [tags](tags.md) |  |
 | created_at | datetime | CURRENT_TIMESTAMP | true | DEFAULT_GENERATED |  |  |  |
 | updated_at | datetime | CURRENT_TIMESTAMP | true | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |  |  |  |
 

@@ -19,10 +19,10 @@
 <text text-anchor="start" x="105.266" y="-208.3" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
 <polygon fill="none" stroke="#000000" points="46,-165.5 46,-195.5 210,-195.5 210,-165.5 46,-165.5"/>
 <text text-anchor="start" x="53" y="-176.9" font-family="Arial" font-size="14.00" fill="#000000">id </text>
-<text text-anchor="start" x="67.7798" y="-176.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>
+<text text-anchor="start" x="67.7798" y="-176.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
 <polygon fill="none" stroke="#000000" points="46,-135.5 46,-165.5 210,-165.5 210,-135.5 46,-135.5"/>
 <text text-anchor="start" x="53" y="-146.9" font-family="Arial" font-size="14.00" fill="#000000">email </text>
-<text text-anchor="start" x="90.3296" y="-146.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(64)]</text>
+<text text-anchor="start" x="90.3296" y="-146.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
 <polygon fill="none" stroke="#000000" points="46,-105.5 46,-135.5 210,-135.5 210,-105.5 46,-105.5"/>
 <text text-anchor="start" x="52.5463" y="-116.9" font-family="Arial" font-size="14.00" fill="#000000">password </text>
 <text text-anchor="start" x="116.3345" y="-116.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
