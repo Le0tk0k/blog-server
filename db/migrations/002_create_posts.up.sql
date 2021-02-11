@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS posts (
-    id INT PRIMARY KEY NOT NULL,
+    id VARCHAR(255) PRIMARY KEY NOT NULL,
     title varchar(255) DEFAULT NULL,
     content longtext,
     slug varchar(255) DEFAULT NULL,
