@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"os"
+	"reflect"
 	"testing"
 	"time"
 
@@ -71,6 +72,68 @@ func TestPostRepository_StorePost(t *testing.T) {
 		})
 	}
 	_, err := db.Exec("DELETE FROM posts")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestPostRepository_FindPostByID(t *testing.T) {
+
+	existPost := &postDTO{
+		ID:      "post_id_1",
+		Title:   "post_title_1",
+		Content: "pot_content_1",
+		Slug:    "post-slug-1",
+		Draft:   true,
+		// TODO mysqlとgoで時間の表示形式が違う
+		PublishedAt: nil,
+	}
+	_, err := db.Exec("INSERT INTO posts VALUES (?, ?, ?, ?, ?, ?)", existPost.ID, existPost.Title, existPost.Content, existPost.Slug, existPost.Draft, existPost.PublishedAt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name    string
+		id      string
+		want    *model.Post
+		wantErr error
+	}{
+		{
+			name: "存在する記事を正常に取得できる",
+			id:   "post_id_1",
+			want: &model.Post{
+				ID:          "post_id_1",
+				Title:       "post_title_1",
+				Content:     "pot_content_1",
+				Slug:        "post-slug-1",
+				Draft:       true,
+				PublishedAt: nil,
+			},
+			wantErr: nil,
+		},
+		{
+			name:    "存在しないIDの場合ErrPostNotFoundを返す",
+			id:      "not_found",
+			want:    nil,
+			wantErr: model.ErrPostNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &postRepository{db: db}
+			got, err := r.FindPostByID(tt.id)
+			if !errors.Is(err, tt.wantErr) {
+				t.Errorf("FindPostByID()  error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("FindPostByID() got = %v, want = %v", got, tt.want)
+			}
+		})
+	}
+
+	_, err = db.Exec("DELETE FROM posts")
 	if err != nil {
 		t.Fatal(err)
 	}

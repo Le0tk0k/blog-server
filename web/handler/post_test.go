@@ -68,6 +68,69 @@ func TestPostHandler_CreatePost(t *testing.T) {
 	}
 }
 
+func TestPostHandler_GetPost(t *testing.T) {
+	now := time.Now()
+	existsPost := &model.Post{
+		ID:          "post_id_1",
+		Title:       "post_title_1",
+		Content:     "pot_content_1",
+		Slug:        "post-slug-1",
+		Draft:       true,
+		PublishedAt: &now,
+	}
+
+	tests := []struct {
+		name                     string
+		id                       string
+		prepareMockPostServiceFn func(mock *mock_service.MockPostService)
+		wantErr                  bool
+		wantCode                 int
+	}{
+		{
+			name: "正常に記事を取得できたときは200を返す",
+			id:   "post_id_1",
+			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
+				mock.EXPECT().GetPost(gomock.Any()).Return(existsPost, nil)
+			},
+			wantErr:  false,
+			wantCode: http.StatusOK,
+		},
+		{
+			name: "記事の取得に失敗した場合は500を返す",
+			id:   "not_found",
+			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
+				mock.EXPECT().GetPost(gomock.Any()).Return(nil, errors.New("error"))
+			},
+			wantErr:  true,
+			wantCode: http.StatusInternalServerError,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			ms := mock_service.NewMockPostService(ctrl)
+			tt.prepareMockPostServiceFn(ms)
+			ph := &PostHandler{postService: ms}
+
+			e := echo.New()
+			r := httptest.NewRequest(http.MethodGet, "/v1/posts/"+tt.id, nil)
+			r.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			w := httptest.NewRecorder()
+			c := e.NewContext(r, w)
+
+			err := ph.GetPost(c)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetPosts() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if er, ok := err.(*echo.HTTPError); (ok && er.Code != tt.wantCode) || (!ok && w.Code != tt.wantCode) {
+				t.Errorf("GetPosts() code = %d, want = %d", w.Code, tt.wantCode)
+			}
+		})
+	}
+}
+
 func TestPostHandler_GetPosts(t *testing.T) {
 	now := time.Now()
 	existsPosts := []*model.Post{{
