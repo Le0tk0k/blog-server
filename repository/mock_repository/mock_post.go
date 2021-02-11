@@ -47,6 +47,21 @@ func (mr *MockPostRepositoryMockRecorder) StorePost(post interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StorePost", reflect.TypeOf((*MockPostRepository)(nil).StorePost), post)
 }
 
+// FindPostByID mocks base method
+func (m *MockPostRepository) FindPostByID(id string) (*model.Post, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindPostByID", id)
+	ret0, _ := ret[0].(*model.Post)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindPostByID indicates an expected call of FindPostByID
+func (mr *MockPostRepositoryMockRecorder) FindPostByID(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindPostByID", reflect.TypeOf((*MockPostRepository)(nil).FindPostByID), id)
+}
+
 // FindAllPosts mocks base method
 func (m *MockPostRepository) FindAllPosts() ([]*model.Post, error) {
 	m.ctrl.T.Helper()

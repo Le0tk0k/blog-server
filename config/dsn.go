@@ -14,5 +14,5 @@ func DSN() string {
 		os.Getenv("MYSQL_HOST"),
 		os.Getenv("MYSQL_PORT"),
 		os.Getenv("MYSQL_DATABASE"),
-	) + "?parseTime=true&charset=utf8"
+	) + "?parseTime=true&loc=Asia%2FTokyo&charset=utf8"
 }

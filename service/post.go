@@ -9,6 +9,7 @@ import (
 
 type PostService interface {
 	CreatePost() (*model.Post, error)
+	GetPost(id string) (*model.Post, error)
 	GetPosts() ([]*model.Post, error)
 }
 
@@ -30,6 +31,16 @@ func (p *postService) CreatePost() (*model.Post, error) {
 	return post, nil
 }
 
+// GetPost はidを持つ記事を取得する
+func (p *postService) GetPost(id string) (*model.Post, error) {
+	post, err := p.postRepository.FindPostByID(id)
+	if err != nil {
+		return nil, fmt.Errorf("GetPost: cannot get post: %w", err)
+	}
+	return post, nil
+}
+
+// GetPosts は全記事を取得する
 func (p *postService) GetPosts() ([]*model.Post, error) {
 	posts, err := p.postRepository.FindAllPosts()
 	if err != nil {

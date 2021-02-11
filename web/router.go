@@ -21,6 +21,7 @@ func NewServer(postService service.PostService) *echo.Echo {
 
 	posts := v1.Group("/posts")
 	posts.GET("", postHandler.GetPosts)
+	posts.GET("/:id", postHandler.GetPost)
 	posts.POST("", postHandler.CreatePost)
 
 	return e

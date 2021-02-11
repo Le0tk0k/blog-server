@@ -42,6 +42,19 @@ func (p *PostHandler) CreatePost(c echo.Context) error {
 	return c.JSON(http.StatusCreated, postToResponse(post))
 }
 
+// GetPost は GET /post/:id に対するhandler
+func (p *PostHandler) GetPost(c echo.Context) error {
+	logger := log.New()
+
+	id := c.Param("id")
+	post, err := p.postService.GetPost(id)
+	if err != nil {
+		logger.Error(err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+	return c.JSON(http.StatusOK, postToResponse(post))
+}
+
 // GetPosts は GET /posts に対するhandler
 func (p *PostHandler) GetPosts(c echo.Context) error {
 	logger := log.New()

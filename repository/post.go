@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -12,6 +14,7 @@ import (
 
 type PostRepository interface {
 	StorePost(post *model.Post) error
+	FindPostByID(id string) (*model.Post, error)
 	FindAllPosts() ([]*model.Post, error)
 }
 
@@ -44,6 +47,18 @@ func (p *postRepository) StorePost(post *model.Post) error {
 		return fmt.Errorf("StorePost: cannot store post: %w", err)
 	}
 	return nil
+}
+
+// FindPostByID はidを持つ記事を取得する
+func (p *postRepository) FindPostByID(id string) (*model.Post, error) {
+	var dto postDTO
+	if err := p.db.Get(&dto, "SELECT * FROM posts WHERE id = ?", id); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("FindPostByID: cannot find post: %w", model.ErrPostNotFound)
+		}
+		return nil, fmt.Errorf("FindPostByID: cannot find post: %w", err)
+	}
+	return dtoToPost(&dto), nil
 }
 
 // FindAllPosts は全記事を取得する
