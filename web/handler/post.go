@@ -52,10 +52,9 @@ func (p *PostHandler) GetPosts(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	var postsRes []*postResponse
-	for _, post := range posts {
-		postRes := postToResponse(post)
-		postsRes = append(postsRes, postRes)
+	postsRes := make([]*postResponse, len(posts))
+	for i, post := range posts {
+		postsRes[i] = postToResponse(post)
 	}
 
 	return c.JSON(http.StatusOK, postsRes)

@@ -53,10 +53,9 @@ func (p *postRepository) FindAllPosts() ([]*model.Post, error) {
 		return nil, fmt.Errorf("FindAllPosts: cannot find post: %w", err)
 	}
 
-	var posts []*model.Post
-	for _, dto := range dtos {
-		post := dtoToPost(dto)
-		posts = append(posts, post)
+	posts := make([]*model.Post, len(dtos))
+	for i, dto := range dtos {
+		posts[i] = dtoToPost(dto)
 	}
 
 	return posts, nil
