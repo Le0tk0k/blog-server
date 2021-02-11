@@ -51,11 +51,10 @@ func TestPostHandler_CreatePost(t *testing.T) {
 			ph := &PostHandler{postService: ms}
 
 			e := echo.New()
-			r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(tt.body))
+			r := httptest.NewRequest(http.MethodPost, "/v1/posts", strings.NewReader(tt.body))
 			r.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			w := httptest.NewRecorder()
 			c := e.NewContext(r, w)
-			c.SetPath("/posts")
 
 			postErr := ph.CreatePost(c)
 			if (postErr != nil) != tt.wantErr {
