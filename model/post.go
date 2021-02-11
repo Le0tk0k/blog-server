@@ -12,12 +12,11 @@ type Post struct {
 	Content     string
 	Slug        string
 	Draft       bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	PublishedAt time.Time
+	PublishedAt *time.Time
 }
 
 // NewPost はPostのポインタを返す
+// PublishedAt は初公開時に設定する。db側のdefaultはnull
 func NewPost() *Post {
 	return &Post{
 		ID:      uuid.New().String(),
