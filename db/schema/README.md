@@ -4,11 +4,11 @@
 
 | Name | Columns | Comment | Type |
 | ---- | ------- | ------- | ---- |
-| [posts](posts.md) | 8 |  | BASE TABLE |
-| [posts_tags](posts_tags.md) | 5 |  | BASE TABLE |
+| [posts](posts.md) | 6 |  | BASE TABLE |
+| [posts_tags](posts_tags.md) | 3 |  | BASE TABLE |
 | [schema_migrations](schema_migrations.md) | 2 |  | BASE TABLE |
-| [tags](tags.md) | 4 |  | BASE TABLE |
-| [users](users.md) | 5 |  | BASE TABLE |
+| [tags](tags.md) | 2 |  | BASE TABLE |
+| [users](users.md) | 3 |  | BASE TABLE |
 
 ## Relations
 

@@ -9,8 +9,6 @@
 CREATE TABLE `tags` (
   `id` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
@@ -20,12 +18,10 @@ CREATE TABLE `tags` (
 
 ## Columns
 
-| Name | Type | Default | Nullable | Extra Definition | Children | Parents | Comment |
-| ---- | ---- | ------- | -------- | --------------- | -------- | ------- | ------- |
-| id | varchar(255) |  | false |  | [posts_tags](posts_tags.md) |  |  |
-| name | varchar(255) |  | false |  |  |  |  |
-| created_at | datetime | CURRENT_TIMESTAMP | true | DEFAULT_GENERATED |  |  |  |
-| updated_at | datetime | CURRENT_TIMESTAMP | true | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |  |  |  |
+| Name | Type | Default | Nullable | Children | Parents | Comment |
+| ---- | ---- | ------- | -------- | -------- | ------- | ------- |
+| id | varchar(255) |  | false | [posts_tags](posts_tags.md) |  |  |
+| name | varchar(255) |  | false |  |  |  |
 
 ## Constraints
 

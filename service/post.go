@@ -9,6 +9,7 @@ import (
 
 type PostService interface {
 	CreatePost() (*model.Post, error)
+	GetPosts() ([]*model.Post, error)
 }
 
 type postService struct {
@@ -27,4 +28,12 @@ func (p *postService) CreatePost() (*model.Post, error) {
 		return nil, fmt.Errorf("CreatePost: cannot create post: %w", err)
 	}
 	return post, nil
+}
+
+func (p *postService) GetPosts() ([]*model.Post, error) {
+	posts, err := p.postRepository.FindAllPosts()
+	if err != nil {
+		return nil, fmt.Errorf("GetPosts: cannot get posts: %w", err)
+	}
+	return posts, nil
 }

@@ -12,8 +12,6 @@ CREATE TABLE `posts` (
   `content` longtext,
   `slug` varchar(255) DEFAULT NULL,
   `draft` tinyint(1) NOT NULL DEFAULT '1',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `published_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
@@ -23,16 +21,14 @@ CREATE TABLE `posts` (
 
 ## Columns
 
-| Name | Type | Default | Nullable | Extra Definition | Children | Parents | Comment |
-| ---- | ---- | ------- | -------- | --------------- | -------- | ------- | ------- |
-| id | varchar(255) |  | false |  | [posts_tags](posts_tags.md) |  |  |
-| title | varchar(255) |  | true |  |  |  |  |
-| content | longtext |  | true |  |  |  |  |
-| slug | varchar(255) |  | true |  |  |  |  |
-| draft | tinyint(1) | 1 | false |  |  |  |  |
-| created_at | datetime | CURRENT_TIMESTAMP | true | DEFAULT_GENERATED |  |  |  |
-| updated_at | datetime | CURRENT_TIMESTAMP | true | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |  |  |  |
-| published_at | datetime |  | true |  |  |  |  |
+| Name | Type | Default | Nullable | Children | Parents | Comment |
+| ---- | ---- | ------- | -------- | -------- | ------- | ------- |
+| id | varchar(255) |  | false | [posts_tags](posts_tags.md) |  |  |
+| title | varchar(255) |  | true |  |  |  |
+| content | longtext |  | true |  |  |  |
+| slug | varchar(255) |  | true |  |  |  |
+| draft | tinyint(1) | 1 | false |  |  |  |
+| published_at | datetime |  | true |  |  |  |
 
 ## Constraints
 

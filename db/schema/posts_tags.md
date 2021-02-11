@@ -10,8 +10,6 @@ CREATE TABLE `posts_tags` (
   `id` varchar(255) NOT NULL,
   `post_id` varchar(255) NOT NULL,
   `tag_id` varchar(255) NOT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `post_tag_index` (`post_id`,`tag_id`),
   KEY `fk_tag_id` (`tag_id`),
@@ -24,13 +22,11 @@ CREATE TABLE `posts_tags` (
 
 ## Columns
 
-| Name | Type | Default | Nullable | Extra Definition | Children | Parents | Comment |
-| ---- | ---- | ------- | -------- | --------------- | -------- | ------- | ------- |
-| id | varchar(255) |  | false |  |  |  |  |
-| post_id | varchar(255) |  | false |  |  | [posts](posts.md) |  |
-| tag_id | varchar(255) |  | false |  |  | [tags](tags.md) |  |
-| created_at | datetime | CURRENT_TIMESTAMP | true | DEFAULT_GENERATED |  |  |  |
-| updated_at | datetime | CURRENT_TIMESTAMP | true | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |  |  |  |
+| Name | Type | Default | Nullable | Children | Parents | Comment |
+| ---- | ---- | ------- | -------- | -------- | ------- | ------- |
+| id | varchar(255) |  | false |  |  |  |
+| post_id | varchar(255) |  | false |  | [posts](posts.md) |  |
+| tag_id | varchar(255) |  | false |  | [tags](tags.md) |  |
 
 ## Constraints
 
