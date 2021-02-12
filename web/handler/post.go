@@ -73,6 +73,19 @@ func (p *PostHandler) GetPosts(c echo.Context) error {
 	return c.JSON(http.StatusOK, postsRes)
 }
 
+// DeletePost は DELETE /post/:id に対するhandler
+func (p *PostHandler) DeletePost(c echo.Context) error {
+	logger := log.New()
+
+	id := c.Param("id")
+	err := p.postService.DeletePost(id)
+	if err != nil {
+		logger.Error(err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+	return c.JSON(http.StatusOK, "successfully deleted")
+}
+
 func postToResponse(post *model.Post) *postResponse {
 	return &postResponse{
 		ID:          post.ID,
