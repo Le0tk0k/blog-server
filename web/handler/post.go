@@ -16,7 +16,7 @@ type PostHandler struct {
 	postService service.PostService
 }
 
-type postResponse struct {
+type postJSON struct {
 	ID          string     `json:"id"`
 	Title       string     `json:"title"`
 	Content     string     `json:"content"`
@@ -39,7 +39,7 @@ func (p *PostHandler) CreatePost(c echo.Context) error {
 		logger.Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
-	return c.JSON(http.StatusCreated, postToResponse(post))
+	return c.JSON(http.StatusCreated, postToJSON(post))
 }
 
 // GetPost は GET /post/:id に対するhandler
@@ -52,7 +52,7 @@ func (p *PostHandler) GetPost(c echo.Context) error {
 		logger.Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
-	return c.JSON(http.StatusOK, postToResponse(post))
+	return c.JSON(http.StatusOK, postToJSON(post))
 }
 
 // GetPosts は GET /posts に対するhandler
@@ -65,12 +65,12 @@ func (p *PostHandler) GetPosts(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	postsRes := make([]*postResponse, len(posts))
+	postsJSON := make([]*postJSON, len(posts))
 	for i, post := range posts {
-		postsRes[i] = postToResponse(post)
+		postsJSON[i] = postToJSON(post)
 	}
 
-	return c.JSON(http.StatusOK, postsRes)
+	return c.JSON(http.StatusOK, postsJSON)
 }
 
 // DeletePost は DELETE /post/:id に対するhandler
@@ -86,8 +86,8 @@ func (p *PostHandler) DeletePost(c echo.Context) error {
 	return c.JSON(http.StatusOK, "successfully deleted")
 }
 
-func postToResponse(post *model.Post) *postResponse {
-	return &postResponse{
+func postToJSON(post *model.Post) *postJSON {
+	return &postJSON{
 		ID:          post.ID,
 		Title:       post.Title,
 		Content:     post.Content,
