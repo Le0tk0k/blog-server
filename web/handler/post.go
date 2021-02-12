@@ -30,7 +30,7 @@ func NewPostHandler(postService service.PostService) PostHandler {
 	return PostHandler{postService: postService}
 }
 
-// CreatePost は POST /post に対するhandler
+// CreatePost は POST /posts に対するhandler
 func (p *PostHandler) CreatePost(c echo.Context) error {
 	logger := log.New()
 
@@ -42,7 +42,7 @@ func (p *PostHandler) CreatePost(c echo.Context) error {
 	return c.JSON(http.StatusCreated, postToJSON(post))
 }
 
-// GetPost は GET /post/:id に対するhandler
+// GetPost は GET /posts/:id に対するhandler
 func (p *PostHandler) GetPost(c echo.Context) error {
 	logger := log.New()
 
@@ -73,7 +73,26 @@ func (p *PostHandler) GetPosts(c echo.Context) error {
 	return c.JSON(http.StatusOK, postsJSON)
 }
 
-// DeletePost は DELETE /post/:id に対するhandler
+// UpdatePost は PUT /posts/:id に対するhandler
+func (p *PostHandler) UpdatePost(c echo.Context) error {
+	logger := log.New()
+
+	req := new(postJSON)
+	if err := c.Bind(req); err != nil {
+		logger.Errorj(map[string]interface{}{"message": "failed to bind", "error": err.Error()})
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
+	post := jsonToPOST(req)
+	err := p.postService.UpdatePost(post)
+	if err != nil {
+		logger.Error(err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+	return c.JSON(http.StatusOK, "successfully updated")
+}
+
+// DeletePost は DELETE /posts/:id に対するhandler
 func (p *PostHandler) DeletePost(c echo.Context) error {
 	logger := log.New()
 
@@ -94,5 +113,16 @@ func postToJSON(post *model.Post) *postJSON {
 		Slug:        post.Slug,
 		Draft:       post.Draft,
 		PublishedAt: post.PublishedAt,
+	}
+}
+
+func jsonToPOST(json *postJSON) *model.Post {
+	return &model.Post{
+		ID:          json.ID,
+		Title:       json.Title,
+		Content:     json.Content,
+		Slug:        json.Slug,
+		Draft:       json.Draft,
+		PublishedAt: json.PublishedAt,
 	}
 }

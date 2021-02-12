@@ -16,6 +16,7 @@ type PostRepository interface {
 	StorePost(post *model.Post) error
 	FindPostByID(id string) (*model.Post, error)
 	FindAllPosts() ([]*model.Post, error)
+	UpdatePost(post *model.Post) error
 	DeletePostByID(id string) error
 }
 
@@ -75,6 +76,16 @@ func (p *postRepository) FindAllPosts() ([]*model.Post, error) {
 	}
 
 	return posts, nil
+}
+
+// UpdatePost はidを持つ記事を更新する
+func (p *postRepository) UpdatePost(post *model.Post) error {
+	dto := postToDTO(post)
+	_, err := p.db.Exec("UPDATE posts SET title = ?, content = ?, slug = ?, draft = ?, published_at = ? WHERE id = ?", dto.Title, dto.Content, dto.Slug, dto.Draft, dto.PublishedAt, dto.ID)
+	if err != nil {
+		return fmt.Errorf("UpdatePost: cannot update post: %w", err)
+	}
+	return nil
 }
 
 // DeletePostByID はidを持つ記事を削除する

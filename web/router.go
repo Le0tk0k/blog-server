@@ -23,6 +23,7 @@ func NewServer(postService service.PostService) *echo.Echo {
 	posts.GET("", postHandler.GetPosts)
 	posts.GET("/:id", postHandler.GetPost)
 	posts.POST("", postHandler.CreatePost)
+	posts.PUT("/:id", postHandler.UpdatePost)
 	posts.DELETE("/:id", postHandler.DeletePost)
 
 	return e
