@@ -193,3 +193,46 @@ func TestPostRepository_FindAllPosts(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestPostRepository_DeletePostByID(t *testing.T) {
+	now := time.Now()
+	existPost := &postDTO{
+		ID:          "post_id_1",
+		Title:       "post_title_1",
+		Content:     "pot_content_1",
+		Slug:        "post-slug-1",
+		Draft:       true,
+		PublishedAt: &now,
+	}
+	_, err := db.Exec("INSERT INTO posts VALUES (?, ?, ?, ?, ?, ?)", existPost.ID, existPost.Title, existPost.Content, existPost.Slug, existPost.Draft, existPost.PublishedAt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name    string
+		id      string
+		wantErr error
+	}{
+		{
+			name:    "存在する記事を正常に削除できる",
+			id:      "post_id_1",
+			wantErr: nil,
+		},
+		{
+			name:    "存在しないIDの場合ErrPostNotFoundを返す",
+			id:      "not_found",
+			wantErr: model.ErrPostNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &postRepository{db: db}
+			err := r.DeletePostByID(tt.id)
+			if !errors.Is(err, tt.wantErr) {
+				t.Errorf("DeletePostByID()  error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

@@ -191,3 +191,46 @@ func TestPostService_GetPosts(t *testing.T) {
 		})
 	}
 }
+
+func TestPostService_DeletePost(t *testing.T) {
+	tests := []struct {
+		name                  string
+		id                    string
+		prepareMockPostRepoFn func(mock *mock_repository.MockPostRepository)
+		wantErr               bool
+	}{
+		{
+			name: "記事を削除できたときはエラーを返さない",
+			id:   "post_id_1",
+			prepareMockPostRepoFn: func(mock *mock_repository.MockPostRepository) {
+				mock.EXPECT().DeletePostByID(gomock.Any()).Return(nil)
+			},
+			wantErr: false,
+		},
+		{
+			name: "記事の削除に失敗したときエラーを返す",
+			id:   "not_found",
+			prepareMockPostRepoFn: func(mock *mock_repository.MockPostRepository) {
+				mock.EXPECT().DeletePostByID("not_found").Return(model.ErrPostNotFound)
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			mr := mock_repository.NewMockPostRepository(ctrl)
+			tt.prepareMockPostRepoFn(mr)
+			ps := &postService{
+				postRepository: mr,
+			}
+
+			err := ps.DeletePost(tt.id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("DeletePost() error = %v, wantErr = %v", err, tt.wantErr)
+			}
+		})
+	}
+}

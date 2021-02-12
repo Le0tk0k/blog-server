@@ -205,3 +205,56 @@ func TestPostHandler_GetPosts(t *testing.T) {
 		})
 	}
 }
+
+func TestPostHandler_DeletePost(t *testing.T) {
+	tests := []struct {
+		name                     string
+		id                       string
+		prepareMockPostServiceFn func(mock *mock_service.MockPostService)
+		wantErr                  bool
+		wantCode                 int
+	}{
+		{
+			name: "正常に記事を削除できたときは200を返す",
+			id:   "post_id_1",
+			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
+				mock.EXPECT().DeletePost(gomock.Any()).Return(nil)
+			},
+			wantErr:  false,
+			wantCode: http.StatusOK,
+		},
+		{
+			name: "記事の削除に失敗した場合は500を返す",
+			id:   "not_found",
+			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
+				mock.EXPECT().DeletePost(gomock.Any()).Return(errors.New("error"))
+			},
+			wantErr:  true,
+			wantCode: http.StatusInternalServerError,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			ms := mock_service.NewMockPostService(ctrl)
+			tt.prepareMockPostServiceFn(ms)
+			ph := &PostHandler{postService: ms}
+
+			e := echo.New()
+			r := httptest.NewRequest(http.MethodDelete, "/v1/posts/"+tt.id, nil)
+			r.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			w := httptest.NewRecorder()
+			c := e.NewContext(r, w)
+
+			err := ph.DeletePost(c)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetPosts() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if er, ok := err.(*echo.HTTPError); (ok && er.Code != tt.wantCode) || (!ok && w.Code != tt.wantCode) {
+				t.Errorf("GetPosts() code = %d, want = %d", w.Code, tt.wantCode)
+			}
+		})
+	}
+}
