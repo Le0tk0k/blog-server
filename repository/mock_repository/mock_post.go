@@ -76,3 +76,17 @@ func (mr *MockPostRepositoryMockRecorder) FindAllPosts() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllPosts", reflect.TypeOf((*MockPostRepository)(nil).FindAllPosts))
 }
+
+// DeletePostByID mocks base method
+func (m *MockPostRepository) DeletePostByID(id string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePostByID", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePostByID indicates an expected call of DeletePostByID
+func (mr *MockPostRepositoryMockRecorder) DeletePostByID(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePostByID", reflect.TypeOf((*MockPostRepository)(nil).DeletePostByID), id)
+}

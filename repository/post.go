@@ -16,6 +16,7 @@ type PostRepository interface {
 	StorePost(post *model.Post) error
 	FindPostByID(id string) (*model.Post, error)
 	FindAllPosts() ([]*model.Post, error)
+	DeletePostByID(id string) error
 }
 
 type postRepository struct {
@@ -74,6 +75,18 @@ func (p *postRepository) FindAllPosts() ([]*model.Post, error) {
 	}
 
 	return posts, nil
+}
+
+// DeletePostByID はidを持つ記事を削除する
+func (p *postRepository) DeletePostByID(id string) error {
+	result, err := p.db.Exec("DELETE FROM posts WHERE id = ?", id)
+	if rowsAffected, err := result.RowsAffected(); rowsAffected == 0 && err == nil {
+		return fmt.Errorf("DeletePostByID: cannot find post: %w", model.ErrPostNotFound)
+	}
+	if err != nil {
+		return fmt.Errorf("DeletePostByID: cannot delete post: %w", err)
+	}
+	return nil
 }
 
 func postToDTO(post *model.Post) *postDTO {

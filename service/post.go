@@ -11,6 +11,7 @@ type PostService interface {
 	CreatePost() (*model.Post, error)
 	GetPost(id string) (*model.Post, error)
 	GetPosts() ([]*model.Post, error)
+	DeletePost(id string) error
 }
 
 type postService struct {
@@ -47,4 +48,13 @@ func (p *postService) GetPosts() ([]*model.Post, error) {
 		return nil, fmt.Errorf("GetPosts: cannot get posts: %w", err)
 	}
 	return posts, nil
+}
+
+// DeletePost はidを持つ記事を削除する
+func (p *postService) DeletePost(id string) error {
+	err := p.postRepository.DeletePostByID(id)
+	if err != nil {
+		return fmt.Errorf("DeletePost: cannot delete post: %w", err)
+	}
+	return nil
 }
