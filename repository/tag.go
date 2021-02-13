@@ -31,9 +31,9 @@ func (t *tagRepository) StoreTag(tag *model.Tag) error {
 	_, err := t.db.Exec("INSERT INTO tags (id, name) VALUES (?, ?)", dto.ID, dto.Name)
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1062 {
-			return fmt.Errorf("StorePost: cannot store post: %w", model.ErrPostAlreadyExisted)
+			return fmt.Errorf("StoreTag: cannot store tag: %w", model.ErrTagAlreadyExisted)
 		}
-		return fmt.Errorf("StorePost: cannot store post: %w", err)
+		return fmt.Errorf("StoreTag: cannot store tag: %w", err)
 	}
 	return nil
 }

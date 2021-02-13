@@ -3,10 +3,10 @@ package handler
 import (
 	"net/http"
 
-	"github.com/Le0tk0k/blog-server/model"
-
 	"github.com/Le0tk0k/blog-server/log"
+	"github.com/Le0tk0k/blog-server/model"
 	"github.com/Le0tk0k/blog-server/service"
+
 	"github.com/labstack/echo/v4"
 )
 
