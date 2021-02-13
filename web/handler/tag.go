@@ -40,7 +40,7 @@ func (t *TagHandler) CreateTag(c echo.Context) error {
 		logger.Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
-	return c.JSON(http.StatusOK, "successfully created")
+	return c.JSON(http.StatusCreated, "successfully created")
 }
 
 func tagToJSON(tag *model.Tag) *tagJSON {
