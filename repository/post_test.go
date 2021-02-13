@@ -67,7 +67,7 @@ func TestPostRepository_StorePost(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			r := &postRepository{db: db}
 			if err := r.StorePost(tt.post); !errors.Is(err, tt.wantErr) {
-				t.Errorf("Create() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("StorePost() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
