@@ -78,6 +78,20 @@ func (mr *MockPostServiceMockRecorder) GetPosts() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPosts", reflect.TypeOf((*MockPostService)(nil).GetPosts))
 }
 
+// UpdatePost mocks base method
+func (m *MockPostService) UpdatePost(post *model.Post) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePost", post)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdatePost indicates an expected call of UpdatePost
+func (mr *MockPostServiceMockRecorder) UpdatePost(post interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePost", reflect.TypeOf((*MockPostService)(nil).UpdatePost), post)
+}
+
 // DeletePost mocks base method
 func (m *MockPostService) DeletePost(id string) error {
 	m.ctrl.T.Helper()

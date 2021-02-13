@@ -206,6 +206,76 @@ func TestPostHandler_GetPosts(t *testing.T) {
 	}
 }
 
+func TestPostHandler_UpdatePost(t *testing.T) {
+	tests := []struct {
+		name                     string
+		id                       string
+		prepareMockPostServiceFn func(mock *mock_service.MockPostService)
+		body                     string
+		wantErr                  bool
+		wantCode                 int
+	}{
+		{
+			name: "正常に記事を更新できたときは200を返す",
+			id:   "new_post_id",
+			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
+				mock.EXPECT().UpdatePost(gomock.Any()).Return(nil)
+			},
+			body: `{
+					"id": "new_post_id",
+					"title": "new_post_title",
+					"content": "new_post_content",
+					"slug": "new-post-slug",
+					"draft": false,
+					"published_at": "2021-02-13T14:03:55+09:00"
+					}`,
+			wantErr:  false,
+			wantCode: http.StatusOK,
+		},
+		{
+			name: "記事の更新に失敗したときは500を返す",
+			id:   "new_post_id",
+			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
+				mock.EXPECT().UpdatePost(gomock.Any()).Return(errors.New("error"))
+			},
+			body: `{
+					"id": "new_post_id",
+					"title": "new_post_title",
+					"content": "new_post_content",
+					"slug": "new-post-slug",
+					"draft": false,
+					"published_at": "2021-02-13T14:03:55+09:00"
+					}`,
+			wantErr:  true,
+			wantCode: http.StatusInternalServerError,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			ms := mock_service.NewMockPostService(ctrl)
+			tt.prepareMockPostServiceFn(ms)
+			ph := &PostHandler{postService: ms}
+
+			e := echo.New()
+			r := httptest.NewRequest(http.MethodPut, "/v1/posts/"+tt.id, strings.NewReader(tt.body))
+			r.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			w := httptest.NewRecorder()
+			c := e.NewContext(r, w)
+
+			err := ph.UpdatePost(c)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("UpdatePost() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if er, ok := err.(*echo.HTTPError); (ok && er.Code != tt.wantCode) || (!ok && w.Code != tt.wantCode) {
+				t.Errorf("UpdatePost() code = %d, want = %d", w.Code, tt.wantCode)
+			}
+		})
+	}
+}
+
 func TestPostHandler_DeletePost(t *testing.T) {
 	tests := []struct {
 		name                     string

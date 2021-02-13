@@ -192,6 +192,90 @@ func TestPostService_GetPosts(t *testing.T) {
 	}
 }
 
+func TestPostService_UpdatePost(t *testing.T) {
+
+	existPost := &model.Post{
+		ID:          "post_id_1",
+		Title:       "post_title_1",
+		Content:     "pot_content_1",
+		Slug:        "post-slug-1",
+		Draft:       true,
+		PublishedAt: func() *time.Time { t := time.Now(); return &t }(),
+	}
+
+	tests := []struct {
+		name                  string
+		post                  *model.Post
+		prepareMockPostRepoFn func(mock *mock_repository.MockPostRepository)
+		wantErr               bool
+	}{
+		{
+			name: "記事を更新できたときはエラーを返さない",
+			post: &model.Post{
+				ID:          "post_id_1_update",
+				Title:       "post_title_1_update",
+				Content:     "pot_content_1_update",
+				Slug:        "post-slug-1-update",
+				Draft:       false,
+				PublishedAt: func() *time.Time { t := time.Now(); return &t }(),
+			},
+			prepareMockPostRepoFn: func(mock *mock_repository.MockPostRepository) {
+				mock.EXPECT().FindPostByID(gomock.Any()).Return(existPost, nil)
+				mock.EXPECT().UpdatePost(gomock.Any()).Return(nil)
+			},
+			wantErr: false,
+		},
+		{
+			name: "更新対象の記事がないときはエラーを返す",
+			post: &model.Post{
+				ID:          "post_id_1_update",
+				Title:       "post_title_1_update",
+				Content:     "pot_content_1_update",
+				Slug:        "post-slug-1-update",
+				Draft:       false,
+				PublishedAt: func() *time.Time { t := time.Now(); return &t }(),
+			},
+			prepareMockPostRepoFn: func(mock *mock_repository.MockPostRepository) {
+				mock.EXPECT().FindPostByID(gomock.Any()).Return(nil, errors.New("error"))
+			},
+			wantErr: true,
+		},
+		{
+			name: "記事の更新に失敗したときエラーを返す",
+			post: &model.Post{
+				ID:          "post_id_1_update",
+				Title:       "post_title_1_update",
+				Content:     "pot_content_1_update",
+				Slug:        "post-slug-1-update",
+				Draft:       false,
+				PublishedAt: func() *time.Time { t := time.Now(); return &t }(),
+			},
+			prepareMockPostRepoFn: func(mock *mock_repository.MockPostRepository) {
+				mock.EXPECT().FindPostByID(gomock.Any()).Return(existPost, nil)
+				mock.EXPECT().UpdatePost(gomock.Any()).Return(errors.New("error"))
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			mr := mock_repository.NewMockPostRepository(ctrl)
+			tt.prepareMockPostRepoFn(mr)
+			ps := &postService{
+				postRepository: mr,
+			}
+
+			err := ps.UpdatePost(tt.post)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetPosts() error = %v, wantErr = %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
 func TestPostService_DeletePost(t *testing.T) {
 	tests := []struct {
 		name                  string
