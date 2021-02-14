@@ -165,3 +165,46 @@ func TestTagService_GetTags(t *testing.T) {
 		})
 	}
 }
+
+func TestTagService_DeleteTag(t *testing.T) {
+	tests := []struct {
+		name                 string
+		id                   string
+		prepareMockTagRepoFn func(mock *mock_repository.MockTagRepository)
+		wantErr              bool
+	}{
+		{
+			name: "タグを削除できたときはエラーを返さない",
+			id:   "tag_id",
+			prepareMockTagRepoFn: func(mock *mock_repository.MockTagRepository) {
+				mock.EXPECT().DeleteTagByID("tag_id").Return(nil)
+			},
+			wantErr: false,
+		},
+		{
+			name: "タグの削除に失敗したときエラーを返す",
+			id:   "not_found",
+			prepareMockTagRepoFn: func(mock *mock_repository.MockTagRepository) {
+				mock.EXPECT().DeleteTagByID("not_found").Return(model.ErrTagNotFound)
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			mr := mock_repository.NewMockTagRepository(ctrl)
+			tt.prepareMockTagRepoFn(mr)
+			ts := &tagService{
+				tagRepository: mr,
+			}
+
+			err := ts.DeleteTag(tt.id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("DeleteTag() error = %v, wantErr = %v", err, tt.wantErr)
+			}
+		})
+	}
+}

@@ -137,8 +137,46 @@ func TestTagRepository_FindAllTags(t *testing.T) {
 		})
 	}
 
-	_, err := db.Exec("DELETE FROM posts")
+	_, err := db.Exec("DELETE FROM tags")
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestTagRepository_DeleteTagByID(t *testing.T) {
+	existTag := &tagDTO{
+		ID:   "tag_id",
+		Name: "tag1",
+	}
+	_, err := db.Exec("INSERT INTO tags VALUES (?, ?)", existTag.ID, existTag.Name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name    string
+		id      string
+		wantErr error
+	}{
+		{
+			name:    "存在するタグを正常に削除できる",
+			id:      "tag_id",
+			wantErr: nil,
+		},
+		{
+			name:    "存在しないIDの場合ErrTagNotFoundを返す",
+			id:      "not_found",
+			wantErr: model.ErrTagNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &tagRepository{db: db}
+			err := r.DeleteTagByID(tt.id)
+			if !errors.Is(err, tt.wantErr) {
+				t.Errorf("DeleteTagByID()  error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
 	}
 }

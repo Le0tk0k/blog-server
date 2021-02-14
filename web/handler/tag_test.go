@@ -195,3 +195,56 @@ func TestTagHandler_GetTags(t *testing.T) {
 		})
 	}
 }
+
+func TestTagHandler_DeleteTag(t *testing.T) {
+	tests := []struct {
+		name                    string
+		id                      string
+		prepareMockTagServiceFn func(mock *mock_service.MockTagService)
+		wantErr                 bool
+		wantCode                int
+	}{
+		{
+			name: "正常にタグを削除できたときは200を返す",
+			id:   "tag_id",
+			prepareMockTagServiceFn: func(mock *mock_service.MockTagService) {
+				mock.EXPECT().DeleteTag(gomock.Any()).Return(nil)
+			},
+			wantErr:  false,
+			wantCode: http.StatusOK,
+		},
+		{
+			name: "タグの削除に失敗した場合は500を返す",
+			id:   "not_found",
+			prepareMockTagServiceFn: func(mock *mock_service.MockTagService) {
+				mock.EXPECT().DeleteTag(gomock.Any()).Return(errors.New("error"))
+			},
+			wantErr:  true,
+			wantCode: http.StatusInternalServerError,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			ms := mock_service.NewMockTagService(ctrl)
+			tt.prepareMockTagServiceFn(ms)
+			th := &TagHandler{tagService: ms}
+
+			e := echo.New()
+			r := httptest.NewRequest(http.MethodGet, "/v1/tags/"+tt.id, nil)
+			r.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			w := httptest.NewRecorder()
+			c := e.NewContext(r, w)
+
+			err := th.DeleteTag(c)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("DeleteTag() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if er, ok := err.(*echo.HTTPError); (ok && er.Code != tt.wantCode) || (!ok && w.Code != tt.wantCode) {
+				t.Errorf("DeleteTag() code = %d, want = %d", w.Code, tt.wantCode)
+			}
+		})
+	}
+}

@@ -76,3 +76,17 @@ func (mr *MockTagServiceMockRecorder) GetTags() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTags", reflect.TypeOf((*MockTagService)(nil).GetTags))
 }
+
+// DeleteTag mocks base method
+func (m *MockTagService) DeleteTag(id string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteTag", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteTag indicates an expected call of DeleteTag
+func (mr *MockTagServiceMockRecorder) DeleteTag(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTag", reflect.TypeOf((*MockTagService)(nil).DeleteTag), id)
+}
