@@ -13,6 +13,7 @@ import (
 type TagRepository interface {
 	StoreTag(tag *model.Tag) error
 	FindTagByID(id string) (*model.Tag, error)
+	FindAllTags() ([]*model.Tag, error)
 }
 
 type tagRepository struct {
@@ -51,6 +52,21 @@ func (t *tagRepository) FindTagByID(id string) (*model.Tag, error) {
 		return nil, fmt.Errorf("FindTagByID: cannot find tag: %w", err)
 	}
 	return dtoToTag(&dto), nil
+}
+
+// FindAllTags は全記事を取得する
+func (t *tagRepository) FindAllTags() ([]*model.Tag, error) {
+	var dtos []*tagDTO
+	if err := t.db.Select(&dtos, "SELECT * FROM tags"); err != nil {
+		return nil, fmt.Errorf("FindAllTags: cannot find tag: %w", err)
+	}
+
+	tags := make([]*model.Tag, len(dtos))
+	for i, dto := range dtos {
+		tags[i] = dtoToTag(dto)
+	}
+
+	return tags, nil
 }
 
 func tagToDTO(tag *model.Tag) *tagDTO {

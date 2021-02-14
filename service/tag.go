@@ -10,6 +10,7 @@ import (
 type TagService interface {
 	CreateTag(name string) error
 	GetTag(id string) (*model.Tag, error)
+	GetTags() ([]*model.Tag, error)
 }
 
 type tagService struct {
@@ -37,4 +38,13 @@ func (t *tagService) GetTag(id string) (*model.Tag, error) {
 		return nil, fmt.Errorf("GetTag: cannot get tag: %w", err)
 	}
 	return tag, nil
+}
+
+// GetTags は全タグを取得する
+func (t *tagService) GetTags() ([]*model.Tag, error) {
+	tags, err := t.tagRepository.FindAllTags()
+	if err != nil {
+		return nil, fmt.Errorf("GetTags: cannot get tag: %w", err)
+	}
+	return tags, nil
 }

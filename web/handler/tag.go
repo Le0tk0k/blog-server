@@ -56,6 +56,24 @@ func (t *TagHandler) GetTag(c echo.Context) error {
 	return c.JSON(http.StatusOK, tagToJSON(tag))
 }
 
+// GetTags は GET /tags に対するhandler
+func (t *TagHandler) GetTags(c echo.Context) error {
+	logger := log.New()
+
+	tags, err := t.tagService.GetTags()
+	if err != nil {
+		logger.Error(err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
+	tagsJSON := make([]*tagJSON, len(tags))
+	for i, tag := range tags {
+		tagsJSON[i] = tagToJSON(tag)
+	}
+
+	return c.JSON(http.StatusOK, tagsJSON)
+}
+
 func tagToJSON(tag *model.Tag) *tagJSON {
 	return &tagJSON{
 		ID:   tag.ID,
