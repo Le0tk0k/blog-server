@@ -129,3 +129,69 @@ func TestTagHandler_GetTag(t *testing.T) {
 		})
 	}
 }
+
+func TestTagHandler_GetTags(t *testing.T) {
+	existsTags := []*model.Tag{{
+		ID:   "tag_id_1",
+		Name: "tag1",
+	}, {
+		ID:   "tag_id_2",
+		Name: "tag2",
+	}}
+
+	tests := []struct {
+		name                    string
+		prepareMockTagServiceFn func(mock *mock_service.MockTagService)
+		wantErr                 bool
+		wantCode                int
+	}{
+		{
+			name: "正常にタグを取得できたときは200を返す",
+			prepareMockTagServiceFn: func(mock *mock_service.MockTagService) {
+				mock.EXPECT().GetTags().Return(existsTags, nil)
+			},
+			wantErr:  false,
+			wantCode: http.StatusOK,
+		},
+		{
+			name: "タグが0件でもエラーにならずに200を返す",
+			prepareMockTagServiceFn: func(mock *mock_service.MockTagService) {
+				mock.EXPECT().GetTags().Return(nil, nil)
+			},
+			wantErr:  false,
+			wantCode: http.StatusOK,
+		},
+		{
+			name: "タグの取得に失敗した場合は500を返す",
+			prepareMockTagServiceFn: func(mock *mock_service.MockTagService) {
+				mock.EXPECT().GetTags().Return(nil, errors.New("error"))
+			},
+			wantErr:  true,
+			wantCode: http.StatusInternalServerError,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			ms := mock_service.NewMockTagService(ctrl)
+			tt.prepareMockTagServiceFn(ms)
+			th := &TagHandler{tagService: ms}
+
+			e := echo.New()
+			r := httptest.NewRequest(http.MethodGet, "/v1/tags", nil)
+			r.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			w := httptest.NewRecorder()
+			c := e.NewContext(r, w)
+
+			err := th.GetTags(c)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetTags() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if er, ok := err.(*echo.HTTPError); (ok && er.Code != tt.wantCode) || (!ok && w.Code != tt.wantCode) {
+				t.Errorf("GetTags() code = %d, want = %d", w.Code, tt.wantCode)
+			}
+		})
+	}
+}

@@ -61,3 +61,18 @@ func (mr *MockTagRepositoryMockRecorder) FindTagByID(id interface{}) *gomock.Cal
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindTagByID", reflect.TypeOf((*MockTagRepository)(nil).FindTagByID), id)
 }
+
+// FindAllTags mocks base method
+func (m *MockTagRepository) FindAllTags() ([]*model.Tag, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindAllTags")
+	ret0, _ := ret[0].([]*model.Tag)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindAllTags indicates an expected call of FindAllTags
+func (mr *MockTagRepositoryMockRecorder) FindAllTags() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllTags", reflect.TypeOf((*MockTagRepository)(nil).FindAllTags))
+}

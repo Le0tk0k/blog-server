@@ -102,3 +102,66 @@ func TestTagService_GetTag(t *testing.T) {
 		})
 	}
 }
+
+func TestTagService_GetTags(t *testing.T) {
+	existsTags := []*model.Tag{{
+		ID:   "tag_id_1",
+		Name: "tag1",
+	}, {
+		ID:   "tag_id_2",
+		Name: "tag2",
+	}}
+
+	tests := []struct {
+		name                 string
+		prepareMockTagRepoFn func(mock *mock_repository.MockTagRepository)
+		want                 []*model.Tag
+		wantErr              bool
+	}{
+		{
+			name: "全タグを返す",
+			prepareMockTagRepoFn: func(mock *mock_repository.MockTagRepository) {
+				mock.EXPECT().FindAllTags().Return(existsTags, nil)
+			},
+			want: []*model.Tag{
+				{
+					ID:   "tag_id_1",
+					Name: "tag1",
+				},
+				{
+					ID:   "tag_id_2",
+					Name: "tag2",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "タグの取得に失敗したときエラーを返す",
+			prepareMockTagRepoFn: func(mock *mock_repository.MockTagRepository) {
+				mock.EXPECT().FindAllTags().Return(nil, errors.New("error"))
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			mr := mock_repository.NewMockTagRepository(ctrl)
+			tt.prepareMockTagRepoFn(mr)
+			ts := &tagService{
+				tagRepository: mr,
+			}
+
+			got, err := ts.GetTags()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetTags() error = %v, wantErr = %v", err, tt.wantErr)
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetTags() got = %v, want = %v", got, tt.want)
+			}
+		})
+	}
+}

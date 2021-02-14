@@ -61,3 +61,18 @@ func (mr *MockTagServiceMockRecorder) GetTag(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTag", reflect.TypeOf((*MockTagService)(nil).GetTag), id)
 }
+
+// GetTags mocks base method
+func (m *MockTagService) GetTags() ([]*model.Tag, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTags")
+	ret0, _ := ret[0].([]*model.Tag)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTags indicates an expected call of GetTags
+func (mr *MockTagServiceMockRecorder) GetTags() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTags", reflect.TypeOf((*MockTagService)(nil).GetTags))
+}

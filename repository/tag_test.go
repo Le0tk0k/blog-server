@@ -97,3 +97,48 @@ func TestTagRepository_FindTagByID(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestTagRepository_FindAllTags(t *testing.T) {
+	existTags := []*tagDTO{{
+		ID:   "tag_id_1",
+		Name: "tag1",
+	}, {
+		ID:   "tag_id_2",
+		Name: "tag2",
+	}}
+
+	for _, tag := range existTags {
+		_, err := db.Exec("INSERT INTO tags VALUES (?, ?)", tag.ID, tag.Name)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	tests := []struct {
+		name    string
+		wantErr error
+	}{
+		{
+			name:    "タグを全件取得できる",
+			wantErr: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &tagRepository{db: db}
+			got, err := r.FindAllTags()
+			if !errors.Is(err, tt.wantErr) {
+				t.Errorf("FindAllTags()  error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if len(got) != len(existTags) {
+				t.Errorf("FindAllTags() does not fetch all tags got = %v, want = %v", got, existTags)
+			}
+		})
+	}
+
+	_, err := db.Exec("DELETE FROM posts")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
