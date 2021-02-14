@@ -20,7 +20,7 @@ type postService struct {
 	postRepository repository.PostRepository
 }
 
-// NrePostService はPostServiceを返す
+// NewPostService はPostServiceを返す
 func NewPostService(postRepository repository.PostRepository) PostService {
 	return &postService{postRepository: postRepository}
 }
