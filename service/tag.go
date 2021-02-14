@@ -11,6 +11,7 @@ type TagService interface {
 	CreateTag(name string) error
 	GetTag(id string) (*model.Tag, error)
 	GetTags() ([]*model.Tag, error)
+	DeleteTag(id string) error
 }
 
 type tagService struct {
@@ -47,4 +48,13 @@ func (t *tagService) GetTags() ([]*model.Tag, error) {
 		return nil, fmt.Errorf("GetTags: cannot get tag: %w", err)
 	}
 	return tags, nil
+}
+
+// DeleteTag はidを持つタグを削除する
+func (t *tagService) DeleteTag(id string) error {
+	err := t.tagRepository.DeleteTagByID(id)
+	if err != nil {
+		return fmt.Errorf("DeleteTag: cannot delete tag: %w", err)
+	}
+	return nil
 }

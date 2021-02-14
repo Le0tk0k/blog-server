@@ -74,6 +74,19 @@ func (t *TagHandler) GetTags(c echo.Context) error {
 	return c.JSON(http.StatusOK, tagsJSON)
 }
 
+// DeleteTag は DELETE /tags/:id に対するhandler
+func (t *TagHandler) DeleteTag(c echo.Context) error {
+	logger := log.New()
+
+	id := c.Param("id")
+	err := t.tagService.DeleteTag(id)
+	if err != nil {
+		logger.Error(err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+	return c.JSON(http.StatusOK, "successfully deleted")
+}
+
 func tagToJSON(tag *model.Tag) *tagJSON {
 	return &tagJSON{
 		ID:   tag.ID,

@@ -31,6 +31,7 @@ func NewServer(postService service.PostService, tagService service.TagService) *
 	tags.POST("", tagHandler.CreateTag)
 	tags.GET("/:id", tagHandler.GetTag)
 	tags.GET("", tagHandler.GetTags)
+	tags.DELETE("/:id", tagHandler.DeleteTag)
 
 	return e
 }

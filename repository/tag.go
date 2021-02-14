@@ -14,6 +14,7 @@ type TagRepository interface {
 	StoreTag(tag *model.Tag) error
 	FindTagByID(id string) (*model.Tag, error)
 	FindAllTags() ([]*model.Tag, error)
+	DeleteTagByID(id string) error
 }
 
 type tagRepository struct {
@@ -67,6 +68,18 @@ func (t *tagRepository) FindAllTags() ([]*model.Tag, error) {
 	}
 
 	return tags, nil
+}
+
+// DeleteTagByID はidを持つ記事を削除する
+func (t *tagRepository) DeleteTagByID(id string) error {
+	result, err := t.db.Exec("DELETE FROM tags WHERE id = ?", id)
+	if rowsAffected, err := result.RowsAffected(); rowsAffected == 0 && err == nil {
+		return fmt.Errorf("DeleteTabByID: cannot find tag: %w", model.ErrTagNotFound)
+	}
+	if err != nil {
+		return fmt.Errorf("DeleteTabByID: cannot delete tag: %w", err)
+	}
+	return nil
 }
 
 func tagToDTO(tag *model.Tag) *tagDTO {
