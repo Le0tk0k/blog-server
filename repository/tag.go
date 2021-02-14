@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/Le0tk0k/blog-server/model"
@@ -10,6 +12,7 @@ import (
 
 type TagRepository interface {
 	StoreTag(tag *model.Tag) error
+	FindTagByID(id string) (*model.Tag, error)
 }
 
 type tagRepository struct {
@@ -36,6 +39,18 @@ func (t *tagRepository) StoreTag(tag *model.Tag) error {
 		return fmt.Errorf("StoreTag: cannot store tag: %w", err)
 	}
 	return nil
+}
+
+// FindTagByID はidを持つ記事を取得する
+func (t *tagRepository) FindTagByID(id string) (*model.Tag, error) {
+	var dto tagDTO
+	if err := t.db.Get(&dto, "SELECT * FROM tags WHERE id = ?", id); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("FindTagByID: cannot find tag: %w", model.ErrTagNotFound)
+		}
+		return nil, fmt.Errorf("FindTagByID: cannot find tag: %w", err)
+	}
+	return dtoToTag(&dto), nil
 }
 
 func tagToDTO(tag *model.Tag) *tagDTO {

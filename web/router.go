@@ -29,6 +29,7 @@ func NewServer(postService service.PostService, tagService service.TagService) *
 
 	tags := v1.Group("/tags")
 	tags.POST("", tagHandler.CreateTag)
+	tags.GET("/:id", tagHandler.GetTag)
 
 	return e
 }

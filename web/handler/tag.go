@@ -43,6 +43,19 @@ func (t *TagHandler) CreateTag(c echo.Context) error {
 	return c.JSON(http.StatusCreated, "successfully created")
 }
 
+// GetTag は GET /tags/:id に対するhandler
+func (t *TagHandler) GetTag(c echo.Context) error {
+	logger := log.New()
+
+	id := c.Param("id")
+	tag, err := t.tagService.GetTag(id)
+	if err != nil {
+		logger.Error(err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+	return c.JSON(http.StatusOK, tagToJSON(tag))
+}
+
 func tagToJSON(tag *model.Tag) *tagJSON {
 	return &tagJSON{
 		ID:   tag.ID,

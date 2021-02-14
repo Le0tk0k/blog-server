@@ -9,6 +9,7 @@ import (
 
 type TagService interface {
 	CreateTag(name string) error
+	GetTag(id string) (*model.Tag, error)
 }
 
 type tagService struct {
@@ -27,4 +28,13 @@ func (t *tagService) CreateTag(name string) error {
 		return fmt.Errorf("CreateTag: cannot create tag: %w", err)
 	}
 	return nil
+}
+
+// GetTag はidを持つタグを取得する
+func (t *tagService) GetTag(id string) (*model.Tag, error) {
+	tag, err := t.tagRepository.FindTagByID(id)
+	if err != nil {
+		return nil, fmt.Errorf("GetTag: cannot get tag: %w", err)
+	}
+	return tag, nil
 }
