@@ -5,6 +5,7 @@
 package mock_service
 
 import (
+	model "github.com/Le0tk0k/blog-server/model"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )
@@ -44,4 +45,19 @@ func (m *MockTagService) CreateTag(name string) error {
 func (mr *MockTagServiceMockRecorder) CreateTag(name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTag", reflect.TypeOf((*MockTagService)(nil).CreateTag), name)
+}
+
+// GetTag mocks base method
+func (m *MockTagService) GetTag(id string) (*model.Tag, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTag", id)
+	ret0, _ := ret[0].(*model.Tag)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTag indicates an expected call of GetTag
+func (mr *MockTagServiceMockRecorder) GetTag(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTag", reflect.TypeOf((*MockTagService)(nil).GetTag), id)
 }

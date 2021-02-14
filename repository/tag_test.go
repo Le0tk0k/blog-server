@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"reflect"
 	"testing"
 
 	"github.com/Le0tk0k/blog-server/model"
@@ -40,6 +41,58 @@ func TestTagRepository_StoreTag(t *testing.T) {
 		})
 	}
 	_, err := db.Exec("DELETE FROM tags")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTagRepository_FindTagByID(t *testing.T) {
+	existTag := &tagDTO{
+		ID:   "tag_id",
+		Name: "tag1",
+	}
+	_, err := db.Exec("INSERT INTO tags VALUES (?, ?)", existTag.ID, existTag.Name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name    string
+		id      string
+		want    *model.Tag
+		wantErr error
+	}{
+		{
+			name: "存在するタグを正常に取得できる",
+			id:   "tag_id",
+			want: &model.Tag{
+				ID:   "tag_id",
+				Name: "tag1",
+			},
+			wantErr: nil,
+		},
+		{
+			name:    "存在しないIDの場合ErrTagNotFoundを返す",
+			id:      "not_found",
+			want:    nil,
+			wantErr: model.ErrTagNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &tagRepository{db: db}
+			got, err := r.FindTagByID(tt.id)
+			if !errors.Is(err, tt.wantErr) {
+				t.Errorf("FindTagByID()  error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("FindTagByID() got = %v, want = %v", got, tt.want)
+			}
+		})
+	}
+
+	_, err = db.Exec("DELETE FROM tags")
 	if err != nil {
 		t.Fatal(err)
 	}

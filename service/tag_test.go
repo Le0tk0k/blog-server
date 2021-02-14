@@ -1,7 +1,11 @@
 package service
 
 import (
+	"errors"
+	"reflect"
 	"testing"
+
+	"github.com/Le0tk0k/blog-server/model"
 
 	"github.com/Le0tk0k/blog-server/repository/mock_repository"
 	"github.com/golang/mock/gomock"
@@ -37,6 +41,63 @@ func TestTagService_CreateTag(t *testing.T) {
 			err := ts.CreateTag(tt.tagName)
 			if err != tt.wantErr {
 				t.Errorf("CreateTag() error = %v, wantErr = %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestTagService_GetTag(t *testing.T) {
+	existsTag := &model.Tag{
+		ID:   "tag_id",
+		Name: "tag",
+	}
+
+	tests := []struct {
+		name                 string
+		id                   string
+		prepareMockTagRepoFn func(mock *mock_repository.MockTagRepository)
+		want                 *model.Tag
+		wantErr              bool
+	}{
+		{
+			name: "タグを返す",
+			id:   "tag_id",
+			prepareMockTagRepoFn: func(mock *mock_repository.MockTagRepository) {
+				mock.EXPECT().FindTagByID("tag_id").Return(existsTag, nil)
+			},
+			want: &model.Tag{
+				ID:   "tag_id",
+				Name: "tag",
+			},
+			wantErr: false,
+		},
+		{
+			name: "記事の取得に失敗したときエラーを返す",
+			id:   "not_found",
+			prepareMockTagRepoFn: func(mock *mock_repository.MockTagRepository) {
+				mock.EXPECT().FindTagByID("not_found").Return(nil, errors.New("error"))
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			mr := mock_repository.NewMockTagRepository(ctrl)
+			tt.prepareMockTagRepoFn(mr)
+			ts := &tagService{
+				tagRepository: mr,
+			}
+
+			got, err := ts.GetTag(tt.id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetTag() error = %v, wantErr = %v", err, tt.wantErr)
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetTag() got = %v, want = %v", got, tt.want)
 			}
 		})
 	}
