@@ -77,15 +77,15 @@ func TestPostHandler_GetPost(t *testing.T) {
 		Slug:        "post-slug-1",
 		Draft:       true,
 		PublishedAt: &now,
-	}
-	existsTags := []*model.Tag{
-		{
-			ID:   "tag_id_1",
-			Name: "tag1",
-		},
-		{
-			ID:   "tag_id_2",
-			Name: "tag2",
+		Tags: []*model.Tag{
+			{
+				ID:   "tag_id_1",
+				Name: "tag1",
+			},
+			{
+				ID:   "tag_id_2",
+				Name: "tag2",
+			},
 		},
 	}
 
@@ -100,7 +100,7 @@ func TestPostHandler_GetPost(t *testing.T) {
 			name: "正常に記事を取得できたときは200を返す",
 			id:   "post_id_1",
 			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
-				mock.EXPECT().GetPost(gomock.Any()).Return(existsPost, existsTags, nil)
+				mock.EXPECT().GetPost(gomock.Any()).Return(existsPost, nil)
 			},
 			wantErr:  false,
 			wantCode: http.StatusOK,
@@ -109,7 +109,7 @@ func TestPostHandler_GetPost(t *testing.T) {
 			name: "記事の取得に失敗した場合は500を返す",
 			id:   "not_found",
 			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
-				mock.EXPECT().GetPost(gomock.Any()).Return(nil, nil, errors.New("error"))
+				mock.EXPECT().GetPost(gomock.Any()).Return(nil, errors.New("error"))
 			},
 			wantErr:  true,
 			wantCode: http.StatusInternalServerError,

@@ -35,18 +35,13 @@ func (p *PostHandler) GetPost(c echo.Context) error {
 	logger := log.New()
 
 	id := c.Param("id")
-	post, tags, err := p.postService.GetPost(id)
+	post, err := p.postService.GetPost(id)
 	if err != nil {
 		logger.Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	tagsJSON := make([]*tagJSON, len(tags))
-	for i, tag := range tags {
-		tagsJSON[i] = tagToJSON(tag)
-	}
-	res := postWithTagsToPostJSONWithTags(post, tags)
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, postToPostWithTagsJSON(post))
 }
 
 // GetPosts は GET /posts に対するhandler

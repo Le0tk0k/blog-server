@@ -20,7 +20,7 @@ type tagJSON struct {
 	Name string `json:"name"`
 }
 
-type postJSONWithTags struct {
+type postWithTagsJSON struct {
 	ID          string     `json:"id"`
 	Title       string     `json:"title"`
 	Content     string     `json:"content"`
@@ -52,12 +52,12 @@ func jsonToPOST(json *postJSON) *model.Post {
 	}
 }
 
-func postWithTagsToPostJSONWithTags(post *model.Post, tags []*model.Tag) *postJSONWithTags {
-	tagsJSON := make([]*tagJSON, len(tags))
-	for i, tag := range tags {
+func postToPostWithTagsJSON(post *model.Post) *postWithTagsJSON {
+	tagsJSON := make([]*tagJSON, len(post.Tags))
+	for i, tag := range post.Tags {
 		tagsJSON[i] = tagToJSON(tag)
 	}
-	return &postJSONWithTags{
+	return &postWithTagsJSON{
 		ID:          post.ID,
 		Title:       post.Title,
 		Content:     post.Content,

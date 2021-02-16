@@ -48,13 +48,12 @@ func (mr *MockPostRepositoryMockRecorder) StorePost(post interface{}) *gomock.Ca
 }
 
 // FindPostByID mocks base method
-func (m *MockPostRepository) FindPostByID(id string) (*model.Post, []*model.Tag, error) {
+func (m *MockPostRepository) FindPostByID(id string) (*model.Post, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindPostByID", id)
 	ret0, _ := ret[0].(*model.Post)
-	ret1, _ := ret[1].([]*model.Tag)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // FindPostByID indicates an expected call of FindPostByID

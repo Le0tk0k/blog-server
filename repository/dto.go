@@ -16,7 +16,7 @@ type postDTO struct {
 	PublishedAt *time.Time `db:"published_at"`
 }
 
-type postDTOWithTags struct {
+type postWithTagsDTO struct {
 	ID          string     `db:"id"`
 	Title       string     `db:"title"`
 	Content     string     `db:"content"`
@@ -54,7 +54,7 @@ func dtoToPost(dto *postDTO) *model.Post {
 	}
 }
 
-func postDTOWithTagsTOPostAndTags(dto *postDTOWithTags) (*model.Post, []*model.Tag) {
+func postWithTagsDTOTOPost(dto *postWithTagsDTO) *model.Post {
 	post := &model.Post{
 		ID:          dto.ID,
 		Title:       dto.Title,
@@ -72,7 +72,8 @@ func postDTOWithTagsTOPostAndTags(dto *postDTOWithTags) (*model.Post, []*model.T
 			Name: tagNames[i],
 		}
 	}
-	return post, tags
+	post.Tags = tags
+	return post
 }
 
 func tagToDTO(tag *model.Tag) *tagDTO {

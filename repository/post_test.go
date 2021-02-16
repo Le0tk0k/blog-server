@@ -116,57 +116,51 @@ func TestPostRepository_FindPostByID(t *testing.T) {
 	}
 
 	tests := []struct {
-		name     string
-		id       string
-		wantPost *model.Post
-		wantTag  []*model.Tag
-		wantErr  error
+		name    string
+		id      string
+		want    *model.Post
+		wantErr error
 	}{
 		{
 			name: "存在する記事を正常に取得できる",
 			id:   "post_id_1",
-			wantPost: &model.Post{
+			want: &model.Post{
 				ID:          "post_id_1",
 				Title:       "post_title_1",
 				Content:     "pot_content_1",
 				Slug:        "post-slug-1",
 				Draft:       true,
 				PublishedAt: nil,
-			},
-			wantTag: []*model.Tag{
-				{
-					ID:   "tag_id_1",
-					Name: "tag1",
-				},
-				{
-					ID:   "tag_id_2",
-					Name: "tag2",
+				Tags: []*model.Tag{
+					{
+						ID:   "tag_id_1",
+						Name: "tag1",
+					},
+					{
+						ID:   "tag_id_2",
+						Name: "tag2",
+					},
 				},
 			},
 			wantErr: nil,
 		},
 		{
-			name:     "存在しないIDの場合ErrPostNotFoundを返す",
-			id:       "not_found",
-			wantPost: nil,
-			wantTag:  nil,
-			wantErr:  model.ErrPostNotFound,
+			name:    "存在しないIDの場合ErrPostNotFoundを返す",
+			id:      "not_found",
+			want:    nil,
+			wantErr: model.ErrPostNotFound,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := &postRepository{db: db}
-			gotPost, gotTag, err := r.FindPostByID(tt.id)
+			got, err := r.FindPostByID(tt.id)
 			if !errors.Is(err, tt.wantErr) {
 				t.Errorf("FindPostByID()  error = %v, wantErr %v", err, tt.wantErr)
 			}
-			if !reflect.DeepEqual(gotPost, tt.wantPost) {
-				t.Errorf("FindPostByID() got = %v, want = %v", gotPost, tt.wantPost)
-			}
-			// TODO 比較方法これであってるか調べる
-			if !reflect.DeepEqual(gotTag, tt.wantTag) {
-				t.Errorf("FindPostByID() got = %v, want = %v", gotTag, tt.wantTag)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("FindPostByID() got = %v, want = %v", got, tt.want)
 			}
 		})
 	}

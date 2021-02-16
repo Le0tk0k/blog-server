@@ -54,15 +54,15 @@ func TestPostService_GetPost(t *testing.T) {
 		Slug:        "post-slug-1",
 		Draft:       true,
 		PublishedAt: &now,
-	}
-	existsTags := []*model.Tag{
-		{
-			ID:   "tag_id_1",
-			Name: "tag1",
-		},
-		{
-			ID:   "tag_id_2",
-			Name: "tag2",
+		Tags: []*model.Tag{
+			{
+				ID:   "tag_id_1",
+				Name: "tag1",
+			},
+			{
+				ID:   "tag_id_2",
+				Name: "tag2",
+			},
 		},
 	}
 
@@ -70,32 +70,31 @@ func TestPostService_GetPost(t *testing.T) {
 		name                  string
 		id                    string
 		prepareMockPostRepoFn func(mock *mock_repository.MockPostRepository)
-		wantPost              *model.Post
-		wantTag               []*model.Tag
+		want                  *model.Post
 		wantErr               bool
 	}{
 		{
 			name: "記事を返す",
 			id:   "post_id_1",
 			prepareMockPostRepoFn: func(mock *mock_repository.MockPostRepository) {
-				mock.EXPECT().FindPostByID("post_id_1").Return(existsPost, existsTags, nil)
+				mock.EXPECT().FindPostByID("post_id_1").Return(existsPost, nil)
 			},
-			wantPost: &model.Post{
+			want: &model.Post{
 				ID:          "post_id_1",
 				Title:       "post_title_1",
 				Content:     "pot_content_1",
 				Slug:        "post-slug-1",
 				Draft:       true,
 				PublishedAt: &now,
-			},
-			wantTag: []*model.Tag{
-				{
-					ID:   "tag_id_1",
-					Name: "tag1",
-				},
-				{
-					ID:   "tag_id_2",
-					Name: "tag2",
+				Tags: []*model.Tag{
+					{
+						ID:   "tag_id_1",
+						Name: "tag1",
+					},
+					{
+						ID:   "tag_id_2",
+						Name: "tag2",
+					},
 				},
 			},
 			wantErr: false,
@@ -104,11 +103,10 @@ func TestPostService_GetPost(t *testing.T) {
 			name: "記事の取得に失敗したときエラーを返す",
 			id:   "not_found",
 			prepareMockPostRepoFn: func(mock *mock_repository.MockPostRepository) {
-				mock.EXPECT().FindPostByID("not_found").Return(nil, nil, errors.New("error"))
+				mock.EXPECT().FindPostByID("not_found").Return(nil, errors.New("error"))
 			},
-			wantPost: nil,
-			wantTag:  nil,
-			wantErr:  true,
+			want:    nil,
+			wantErr: true,
 		},
 	}
 
@@ -122,15 +120,12 @@ func TestPostService_GetPost(t *testing.T) {
 				postRepository: mr,
 			}
 
-			gotPost, gotTag, err := ps.GetPost(tt.id)
+			got, err := ps.GetPost(tt.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetPost() error = %v, wantErr = %v", err, tt.wantErr)
 			}
-			if !reflect.DeepEqual(gotPost, tt.wantPost) {
-				t.Errorf("GetPost() got = %v, want = %v", gotPost, tt.wantPost)
-			}
-			if !reflect.DeepEqual(gotTag, tt.wantTag) {
-				t.Errorf("GetPost() got = %v, want = %v", gotTag, tt.wantTag)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetPost() got = %v, want = %v", got, tt.want)
 			}
 		})
 	}

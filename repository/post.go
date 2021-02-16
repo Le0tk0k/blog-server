@@ -13,7 +13,7 @@ import (
 
 type PostRepository interface {
 	StorePost(post *model.Post) error
-	FindPostByID(id string) (*model.Post, []*model.Tag, error)
+	FindPostByID(id string) (*model.Post, error)
 	FindAllPosts() ([]*model.Post, error)
 	UpdatePost(post *model.Post) error
 	DeletePostByID(id string) error
@@ -42,17 +42,17 @@ func (p *postRepository) StorePost(post *model.Post) error {
 }
 
 // FindPostByID はidを持つ記事を取得する
-func (p *postRepository) FindPostByID(id string) (*model.Post, []*model.Tag, error) {
-	var dto postDTOWithTags
+func (p *postRepository) FindPostByID(id string) (*model.Post, error) {
+	var dto postWithTagsDTO
 	query := "SELECT posts.id, posts.title, posts.content, posts.slug, posts.draft, posts.published_at, GROUP_CONCAT(tags.id) AS tag_id, GROUP_CONCAT(tags.name) AS tags FROM posts LEFT JOIN posts_tags on posts.id = posts_tags.post_id LEFT JOIN tags on posts_tags.tag_id = tags.id WHERE posts.id = ? GROUP BY posts.id"
 	if err := p.db.Get(&dto, query, id); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil, fmt.Errorf("FindPostByID: cannot find post: %w", model.ErrPostNotFound)
+			return nil, fmt.Errorf("FindPostByID: cannot find post: %w", model.ErrPostNotFound)
 		}
-		return nil, nil, fmt.Errorf("FindPostByID: cannot find post: %w", err)
+		return nil, fmt.Errorf("FindPostByID: cannot find post: %w", err)
 	}
-	post, tags := postDTOWithTagsTOPostAndTags(&dto)
-	return post, tags, nil
+	post := postWithTagsDTOTOPost(&dto)
+	return post, nil
 }
 
 // FindAllPosts は全記事を取得する
