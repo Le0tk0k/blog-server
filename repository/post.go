@@ -56,6 +56,7 @@ func (p *postRepository) FindPostByID(id string) (*model.Post, error) {
 }
 
 // FindAllPosts は全記事を取得する
+// nolint gosec
 func (p *postRepository) FindAllPosts(conditions []string) ([]*model.Post, error) {
 	var condition string
 	for i, c := range conditions {
