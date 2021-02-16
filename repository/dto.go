@@ -49,16 +49,16 @@ func postToDTO(post *model.Post) *postDTO {
 	}
 }
 
-func dtoToPost(dto *postDTO) *model.Post {
-	return &model.Post{
-		ID:          dto.ID,
-		Title:       dto.Title,
-		Content:     dto.Content,
-		Slug:        dto.Slug,
-		Draft:       dto.Draft,
-		PublishedAt: dto.PublishedAt,
-	}
-}
+//func dtoToPost(dto *postDTO) *model.Post {
+//	return &model.Post{
+//		ID:          dto.ID,
+//		Title:       dto.Title,
+//		Content:     dto.Content,
+//		Slug:        dto.Slug,
+//		Draft:       dto.Draft,
+//		PublishedAt: dto.PublishedAt,
+//	}
+//}
 
 func postWithTagsDTOTOPost(dto *postWithTagsDTO) *model.Post {
 	post := &model.Post{
@@ -107,10 +107,10 @@ func postTagToDTO(postTag *model.PostTag) *postTagDTO {
 	}
 }
 
-func dtoToPostTag(dto *postTagDTO) *model.PostTag {
-	return &model.PostTag{
-		ID:     dto.ID,
-		PostID: dto.PostID,
-		TagID:  dto.TagID,
-	}
-}
+//func dtoToPostTag(dto *postTagDTO) *model.PostTag {
+//	return &model.PostTag{
+//		ID:     dto.ID,
+//		PostID: dto.PostID,
+//		TagID:  dto.TagID,
+//	}
+//}

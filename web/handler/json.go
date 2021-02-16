@@ -41,16 +41,16 @@ func postToJSON(post *model.Post) *postJSON {
 	}
 }
 
-func jsonToPOST(json *postJSON) *model.Post {
-	return &model.Post{
-		ID:          json.ID,
-		Title:       json.Title,
-		Content:     json.Content,
-		Slug:        json.Slug,
-		Draft:       json.Draft,
-		PublishedAt: json.PublishedAt,
-	}
-}
+//func jsonToPOST(json *postJSON) *model.Post {
+//	return &model.Post{
+//		ID:          json.ID,
+//		Title:       json.Title,
+//		Content:     json.Content,
+//		Slug:        json.Slug,
+//		Draft:       json.Draft,
+//		PublishedAt: json.PublishedAt,
+//	}
+//}
 
 func postToPostWithTagsJSON(post *model.Post) *postWithTagsJSON {
 	tagsJSON := make([]*tagJSON, len(post.Tags))
