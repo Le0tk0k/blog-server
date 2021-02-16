@@ -10,12 +10,16 @@ import (
 )
 
 type PostHandler struct {
-	postService service.PostService
+	postService    service.PostService
+	postTagService service.PostTagService
 }
 
 // NewPostHandler はPostHandlerを返す
-func NewPostHandler(postService service.PostService) PostHandler {
-	return PostHandler{postService: postService}
+func NewPostHandler(postService service.PostService, postTagService service.PostTagService) PostHandler {
+	return PostHandler{
+		postService:    postService,
+		postTagService: postTagService,
+	}
 }
 
 // CreatePost は POST /posts に対するhandler
@@ -66,18 +70,26 @@ func (p *PostHandler) GetPosts(c echo.Context) error {
 func (p *PostHandler) UpdatePost(c echo.Context) error {
 	logger := log.New()
 
-	req := new(postJSON)
+	req := new(postWithTagsJSON)
 	if err := c.Bind(req); err != nil {
 		logger.Errorj(map[string]interface{}{"message": "failed to bind", "error": err.Error()})
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	post := jsonToPOST(req)
+	post := jsonToPostWithTags(req)
+
 	err := p.postService.UpdatePost(post)
 	if err != nil {
 		logger.Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
+
+	err = p.postTagService.LinkPostTag(post)
+	if err != nil {
+		logger.Error(err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
 	return c.JSON(http.StatusOK, "successfully updated")
 }
 

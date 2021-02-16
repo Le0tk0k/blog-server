@@ -23,13 +23,19 @@ type postWithTagsDTO struct {
 	Slug        string     `db:"slug"`
 	Draft       bool       `db:"draft"`
 	PublishedAt *time.Time `db:"published_at"`
-	TagIDs      string     `db:"tag_id"`
-	TagNames    string     `db:"tags"`
+	TagIDs      *string    `db:"tag_id"`
+	TagNames    *string    `db:"tags"`
 }
 
 type tagDTO struct {
 	ID   string `db:"id"`
 	Name string `db:"name"`
+}
+
+type postTagDTO struct {
+	ID     string `db:"id"`
+	PostID string `db:"post_id"`
+	TagID  string `db:"tag_id"`
 }
 
 func postToDTO(post *model.Post) *postDTO {
@@ -63,8 +69,11 @@ func postWithTagsDTOTOPost(dto *postWithTagsDTO) *model.Post {
 		Draft:       dto.Draft,
 		PublishedAt: dto.PublishedAt,
 	}
-	tagIDs := strings.Split(dto.TagIDs, ",")
-	tagNames := strings.Split(dto.TagNames, ",")
+	if dto.TagIDs == nil || dto.TagNames == nil {
+		return post
+	}
+	tagIDs := strings.Split(*dto.TagIDs, ",")
+	tagNames := strings.Split(*dto.TagNames, ",")
 	tags := make([]*model.Tag, len(tagIDs))
 	for i := 0; i < len(tagIDs); i++ {
 		tags[i] = &model.Tag{
@@ -87,5 +96,21 @@ func dtoToTag(dto *tagDTO) *model.Tag {
 	return &model.Tag{
 		ID:   dto.ID,
 		Name: dto.Name,
+	}
+}
+
+func postTagToDTO(postTag *model.PostTag) *postTagDTO {
+	return &postTagDTO{
+		ID:     postTag.ID,
+		PostID: postTag.PostID,
+		TagID:  postTag.TagID,
+	}
+}
+
+func dtoToPostTag(dto *postTagDTO) *model.PostTag {
+	return &model.PostTag{
+		ID:     dto.ID,
+		PostID: dto.PostID,
+		TagID:  dto.TagID,
 	}
 }
