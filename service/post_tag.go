@@ -13,17 +13,16 @@ type PostTagService interface {
 
 type postTagService struct {
 	postTagRepository repository.PostTagRepository
-	postRepository    repository.PostRepository
 }
 
-// NewPostService はPostServiceを返す
-func NewPostTagService(postTagRepository repository.PostTagRepository, postRepository repository.PostRepository) PostTagService {
+// NewPostService はPostTagServiceを返す
+func NewPostTagService(postTagRepository repository.PostTagRepository) PostTagService {
 	return &postTagService{
 		postTagRepository: postTagRepository,
-		postRepository:    postRepository,
 	}
 }
 
+// LinkPostTag は記事とタグを関連付ける
 func (s *postTagService) LinkPostTag(post *model.Post) error {
 	err := s.postTagRepository.DeleteByPostID(post.ID)
 	if err != nil {

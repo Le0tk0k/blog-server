@@ -94,11 +94,11 @@ func TestPostRepository_FindPostByID(t *testing.T) {
 	}
 	existTags := []*tagDTO{
 		{
-			ID:   "tag_id_1",
+			ID:   "tag_id_1_post_test",
 			Name: "tag1",
 		},
 		{
-			ID:   "tag_id_2",
+			ID:   "tag_id_2_post_test",
 			Name: "tag2",
 		},
 	}
@@ -133,11 +133,11 @@ func TestPostRepository_FindPostByID(t *testing.T) {
 				PublishedAt: nil,
 				Tags: []*model.Tag{
 					{
-						ID:   "tag_id_1",
+						ID:   "tag_id_1_post_test",
 						Name: "tag1",
 					},
 					{
-						ID:   "tag_id_2",
+						ID:   "tag_id_2_post_test",
 						Name: "tag2",
 					},
 				},
@@ -179,14 +179,14 @@ func TestPostRepository_FindAllPosts(t *testing.T) {
 	now := time.Now()
 
 	existsPosts := []*postDTO{{
-		ID:          "post_id_1",
+		ID:          "post_id_1_post_test",
 		Title:       "post_title_1",
 		Content:     "pot_content_1",
 		Slug:        "post-slug-1",
 		Draft:       true,
 		PublishedAt: &now,
 	}, {
-		ID:          "post_id_2",
+		ID:          "post_id_2_post_test",
 		Title:       "post_title_2",
 		Content:     "post_content_2",
 		Slug:        "post-slug-2",
@@ -265,7 +265,7 @@ func TestPostRepository_FindAllPosts(t *testing.T) {
 func TestPostRepository_UpdatePost(t *testing.T) {
 	now := time.Now()
 	existPost := &postDTO{
-		ID:          "post_id_1",
+		ID:          "post_id_1_post_test",
 		Title:       "post_title_1",
 		Content:     "pot_content_1",
 		Slug:        "post-slug-1",
@@ -315,7 +315,7 @@ func TestPostRepository_UpdatePost(t *testing.T) {
 func TestPostRepository_DeletePostByID(t *testing.T) {
 	now := time.Now()
 	existPost := &postDTO{
-		ID:          "post_id_1",
+		ID:          "post_id_post_test",
 		Title:       "post_title_1",
 		Content:     "pot_content_1",
 		Slug:        "post-slug-1",
@@ -334,7 +334,7 @@ func TestPostRepository_DeletePostByID(t *testing.T) {
 	}{
 		{
 			name:    "存在する記事を正常に削除できる",
-			id:      "post_id_1",
+			id:      "post_id_post_test",
 			wantErr: nil,
 		},
 		{

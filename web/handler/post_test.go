@@ -234,12 +234,13 @@ func TestPostHandler_GetPosts(t *testing.T) {
 
 func TestPostHandler_UpdatePost(t *testing.T) {
 	tests := []struct {
-		name                     string
-		id                       string
-		prepareMockPostServiceFn func(mock *mock_service.MockPostService)
-		body                     string
-		wantErr                  bool
-		wantCode                 int
+		name                        string
+		id                          string
+		prepareMockPostServiceFn    func(mock *mock_service.MockPostService)
+		prepareMockPostTagServiceFn func(mock *mock_service.MockPostTagService)
+		body                        string
+		wantErr                     bool
+		wantCode                    int
 	}{
 		{
 			name: "正常に記事を更新できたときは200を返す",
@@ -247,22 +248,8 @@ func TestPostHandler_UpdatePost(t *testing.T) {
 			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
 				mock.EXPECT().UpdatePost(gomock.Any()).Return(nil)
 			},
-			body: `{
-					"id": "new_post_id",
-					"title": "new_post_title",
-					"content": "new_post_content",
-					"slug": "new-post-slug",
-					"draft": false,
-					"published_at": "2021-02-13T14:03:55+09:00"
-					}`,
-			wantErr:  false,
-			wantCode: http.StatusOK,
-		},
-		{
-			name: "記事の更新に失敗したときは500を返す",
-			id:   "new_post_id",
-			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
-				mock.EXPECT().UpdatePost(gomock.Any()).Return(errors.New("error"))
+			prepareMockPostTagServiceFn: func(mock *mock_service.MockPostTagService) {
+				mock.EXPECT().LinkPostTag(gomock.Any()).Return(nil)
 			},
 			body: `{
 					"id": "new_post_id",
@@ -270,7 +257,76 @@ func TestPostHandler_UpdatePost(t *testing.T) {
 					"content": "new_post_content",
 					"slug": "new-post-slug",
 					"draft": false,
-					"published_at": "2021-02-13T14:03:55+09:00"
+					"published_at": "2021-02-13T14:03:55+09:00",
+					"tags": [
+        				{
+            				"id": "2",
+            				"name": "tag2"
+        				},
+        				{
+            				"id": "4",
+            				"name": "tag4"
+        				}
+    				]
+					}`,
+			wantErr:  false,
+			wantCode: http.StatusOK,
+		},
+		{
+			name: "記事の更新に失敗したときは500を返す-1",
+			id:   "new_post_id",
+			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
+				mock.EXPECT().UpdatePost(gomock.Any()).Return(errors.New("error"))
+			},
+			prepareMockPostTagServiceFn: func(mock *mock_service.MockPostTagService) {
+			},
+			body: `{
+					"id": "new_post_id",
+					"title": "new_post_title",
+					"content": "new_post_content",
+					"slug": "new-post-slug",
+					"draft": false,
+					"published_at": "2021-02-13T14:03:55+09:00",
+					"tags": [
+        				{
+            				"id": "2",
+            				"name": "tag2"
+        				},
+        				{
+            				"id": "4",
+            				"name": "tag4"
+        				}
+    				]
+					}`,
+			wantErr:  true,
+			wantCode: http.StatusInternalServerError,
+		},
+		{
+			name: "記事の更新に失敗したときは500を返す-2",
+			id:   "new_post_id",
+			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
+				mock.EXPECT().UpdatePost(gomock.Any()).Return(nil)
+			},
+			prepareMockPostTagServiceFn: func(mock *mock_service.MockPostTagService) {
+				mock.EXPECT().LinkPostTag(gomock.Any()).Return(errors.New("error"))
+			},
+			body: `{
+					"id": "new_post_id",
+					"title": "new_post_title",
+					"content": "new_post_content",
+					"slug": "new-post-slug",
+					"draft": false,
+					"published_at": "2021-02-13T14:03:55+09:00",
+					"tags": [
+        				{
+            				"id": "2",
+            				"name": "tag2"
+        				},
+        				{
+            				"id": "4",
+            				"name": "tag4"
+        				}
+    				]
 					}`,
 			wantErr:  true,
 			wantCode: http.StatusInternalServerError,
@@ -281,9 +337,14 @@ func TestPostHandler_UpdatePost(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			ms := mock_service.NewMockPostService(ctrl)
-			tt.prepareMockPostServiceFn(ms)
-			ph := &PostHandler{postService: ms}
+			mps := mock_service.NewMockPostService(ctrl)
+			mpts := mock_service.NewMockPostTagService(ctrl)
+			tt.prepareMockPostServiceFn(mps)
+			tt.prepareMockPostTagServiceFn(mpts)
+			ph := &PostHandler{
+				postService:    mps,
+				postTagService: mpts,
+			}
 
 			e := echo.New()
 			r := httptest.NewRequest(http.MethodPut, "/v1/posts/"+tt.id, strings.NewReader(tt.body))
