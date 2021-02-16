@@ -15,6 +15,9 @@ func NewServer(postService service.PostService, tagService service.TagService, p
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	// TODO フロント作ってからちゃんと設定する
+	e.Use(middleware.CORS())
+
 	postHandler := handler.NewPostHandler(postService, postTagService)
 	tagHandler := handler.NewTagHandler(tagService)
 
