@@ -54,8 +54,6 @@ func (p *postService) GetPosts() ([]*model.Post, error) {
 
 // UpdatePost はidを持つ記事を更新する
 func (p *postService) UpdatePost(post *model.Post) error {
-	// TODO その他バリデーション、必要に応じて
-
 	// 更新対象の記事を取得
 	targetPost, err := p.postRepository.FindPostByID(post.ID)
 	if err != nil {

@@ -13,6 +13,7 @@ type Post struct {
 	Slug        string
 	Draft       bool
 	PublishedAt *time.Time
+	Tags        []*Tag
 }
 
 // NewPost はPostのポインタを返す

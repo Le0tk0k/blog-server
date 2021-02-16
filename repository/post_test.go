@@ -92,6 +92,28 @@ func TestPostRepository_FindPostByID(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	existTags := []*tagDTO{
+		{
+			ID:   "tag_id_1_post_test",
+			Name: "tag1",
+		},
+		{
+			ID:   "tag_id_2_post_test",
+			Name: "tag2",
+		},
+	}
+	tmp := []string{"1", "2"}
+	for i, tag := range existTags {
+		_, err = db.Exec("INSERT INTO tags VALUES (?, ?)", tag.ID, tag.Name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// TODO posts_tags 実装後リファクタリング
+		_, err = db.Exec("INSERT INTO posts_tags VALUES (?, ?, ?)", tmp[i], existPost.ID, tag.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
 
 	tests := []struct {
 		name    string
@@ -109,6 +131,16 @@ func TestPostRepository_FindPostByID(t *testing.T) {
 				Slug:        "post-slug-1",
 				Draft:       true,
 				PublishedAt: nil,
+				Tags: []*model.Tag{
+					{
+						ID:   "tag_id_1_post_test",
+						Name: "tag1",
+					},
+					{
+						ID:   "tag_id_2_post_test",
+						Name: "tag2",
+					},
+				},
 			},
 			wantErr: nil,
 		},
@@ -137,32 +169,64 @@ func TestPostRepository_FindPostByID(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	_, err = db.Exec("DELETE FROM tags")
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestPostRepository_FindAllPosts(t *testing.T) {
 	now := time.Now()
 
 	existsPosts := []*postDTO{{
-		ID:          "post_id_1",
+		ID:          "post_id_1_post_test",
 		Title:       "post_title_1",
 		Content:     "pot_content_1",
 		Slug:        "post-slug-1",
 		Draft:       true,
 		PublishedAt: &now,
 	}, {
-		ID:          "post_id_2",
+		ID:          "post_id_2_post_test",
 		Title:       "post_title_2",
 		Content:     "post_content_2",
 		Slug:        "post-slug-2",
 		Draft:       false,
 		PublishedAt: &now,
 	}}
-
 	for _, post := range existsPosts {
 		_, err := db.Exec("INSERT INTO posts VALUES (?, ?, ?, ?, ?, ?)", post.ID, post.Title, post.Content, post.Slug, post.Draft, post.PublishedAt)
 		if err != nil {
 			t.Fatal(err)
 		}
+	}
+	existTags := []*tagDTO{
+		{
+			ID:   "tag_id_1",
+			Name: "tag1",
+		},
+		{
+			ID:   "tag_id_2",
+			Name: "tag2",
+		},
+	}
+	for _, tag := range existTags {
+		_, err := db.Exec("INSERT INTO tags VALUES (?, ?)", tag.ID, tag.Name)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	// TODO posts_tags 実装後リファクタリング
+	_, err := db.Exec("INSERT INTO posts_tags VALUES (?, ?, ?)", "1", existsPosts[0].ID, existTags[0].ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = db.Exec("INSERT INTO posts_tags VALUES (?, ?, ?)", "2", existsPosts[1].ID, existTags[0].ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = db.Exec("INSERT INTO posts_tags VALUES (?, ?, ?)", "3", existsPosts[1].ID, existTags[1].ID)
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	tests := []struct {
@@ -188,7 +252,11 @@ func TestPostRepository_FindAllPosts(t *testing.T) {
 		})
 	}
 
-	_, err := db.Exec("DELETE FROM posts")
+	_, err = db.Exec("DELETE FROM posts")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = db.Exec("DELETE FROM tags")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -197,7 +265,7 @@ func TestPostRepository_FindAllPosts(t *testing.T) {
 func TestPostRepository_UpdatePost(t *testing.T) {
 	now := time.Now()
 	existPost := &postDTO{
-		ID:          "post_id_1",
+		ID:          "post_id_1_post_test",
 		Title:       "post_title_1",
 		Content:     "pot_content_1",
 		Slug:        "post-slug-1",
@@ -247,7 +315,7 @@ func TestPostRepository_UpdatePost(t *testing.T) {
 func TestPostRepository_DeletePostByID(t *testing.T) {
 	now := time.Now()
 	existPost := &postDTO{
-		ID:          "post_id_1",
+		ID:          "post_id_post_test",
 		Title:       "post_title_1",
 		Content:     "pot_content_1",
 		Slug:        "post-slug-1",
@@ -266,7 +334,7 @@ func TestPostRepository_DeletePostByID(t *testing.T) {
 	}{
 		{
 			name:    "存在する記事を正常に削除できる",
-			id:      "post_id_1",
+			id:      "post_id_post_test",
 			wantErr: nil,
 		},
 		{

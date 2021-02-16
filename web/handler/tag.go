@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/Le0tk0k/blog-server/log"
-	"github.com/Le0tk0k/blog-server/model"
 	"github.com/Le0tk0k/blog-server/service"
 
 	"github.com/labstack/echo/v4"
@@ -12,11 +11,6 @@ import (
 
 type TagHandler struct {
 	tagService service.TagService
-}
-
-type tagJSON struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
 }
 
 // NewTagHandler はTagHandlerを返す
@@ -85,18 +79,4 @@ func (t *TagHandler) DeleteTag(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, "successfully deleted")
-}
-
-func tagToJSON(tag *model.Tag) *tagJSON {
-	return &tagJSON{
-		ID:   tag.ID,
-		Name: tag.Name,
-	}
-}
-
-func jsonToTag(json *tagJSON) *model.Tag {
-	return &model.Tag{
-		ID:   json.ID,
-		Name: json.Name,
-	}
 }

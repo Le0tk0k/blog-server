@@ -12,4 +12,7 @@ var (
 	ErrTagNotFound = errors.New("tag not found")
 	// ErrTagAlreadyExisted はpostが既に存在しているerrorを生成する
 	ErrTagAlreadyExisted = errors.New("tag has already existed")
+
+	// ErrPostTagAlreadyExisted はpost_tagが既に存在しているerrorを生成する
+	ErrPostTagAlreadyExisted = errors.New("post_tag had already existed")
 )

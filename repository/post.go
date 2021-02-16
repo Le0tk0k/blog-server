@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/Le0tk0k/blog-server/model"
 
@@ -22,15 +21,6 @@ type PostRepository interface {
 
 type postRepository struct {
 	db *sqlx.DB
-}
-
-type postDTO struct {
-	ID          string     `db:"id"`
-	Title       string     `db:"title"`
-	Content     string     `db:"content"`
-	Slug        string     `db:"slug"`
-	Draft       bool       `db:"draft"`
-	PublishedAt *time.Time `db:"published_at"`
 }
 
 // NewPostRepository はPostRepositoryを返す
@@ -53,26 +43,29 @@ func (p *postRepository) StorePost(post *model.Post) error {
 
 // FindPostByID はidを持つ記事を取得する
 func (p *postRepository) FindPostByID(id string) (*model.Post, error) {
-	var dto postDTO
-	if err := p.db.Get(&dto, "SELECT * FROM posts WHERE id = ?", id); err != nil {
+	var dto postWithTagsDTO
+	query := "SELECT posts.id, posts.title, posts.content, posts.slug, posts.draft, posts.published_at, GROUP_CONCAT(tags.id) AS tag_id, GROUP_CONCAT(tags.name) AS tags FROM posts LEFT JOIN posts_tags on posts.id = posts_tags.post_id LEFT JOIN tags on posts_tags.tag_id = tags.id WHERE posts.id = ? GROUP BY posts.id"
+	if err := p.db.Get(&dto, query, id); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("FindPostByID: cannot find post: %w", model.ErrPostNotFound)
 		}
 		return nil, fmt.Errorf("FindPostByID: cannot find post: %w", err)
 	}
-	return dtoToPost(&dto), nil
+	post := postWithTagsDTOTOPost(&dto)
+	return post, nil
 }
 
 // FindAllPosts は全記事を取得する
 func (p *postRepository) FindAllPosts() ([]*model.Post, error) {
-	var dtos []*postDTO
-	if err := p.db.Select(&dtos, "SELECT * FROM posts"); err != nil {
+	var dtos []*postWithTagsDTO
+	query := "SELECT posts.id, posts.title, posts.content, posts.slug, posts.draft, posts.published_at, GROUP_CONCAT(tags.id) AS tag_id, GROUP_CONCAT(tags.name) AS tags FROM posts LEFT JOIN posts_tags on posts.id = posts_tags.post_id LEFT JOIN tags on posts_tags.tag_id = tags.id GROUP BY posts.id"
+	if err := p.db.Select(&dtos, query); err != nil {
 		return nil, fmt.Errorf("FindAllPosts: cannot find post: %w", err)
 	}
 
 	posts := make([]*model.Post, len(dtos))
 	for i, dto := range dtos {
-		posts[i] = dtoToPost(dto)
+		posts[i] = postWithTagsDTOTOPost(dto)
 	}
 
 	return posts, nil
@@ -98,26 +91,4 @@ func (p *postRepository) DeletePostByID(id string) error {
 		return fmt.Errorf("DeletePostByID: cannot delete post: %w", err)
 	}
 	return nil
-}
-
-func postToDTO(post *model.Post) *postDTO {
-	return &postDTO{
-		ID:          post.ID,
-		Title:       post.Title,
-		Content:     post.Content,
-		Slug:        post.Slug,
-		Draft:       post.Draft,
-		PublishedAt: post.PublishedAt,
-	}
-}
-
-func dtoToPost(dto *postDTO) *model.Post {
-	return &model.Post{
-		ID:          dto.ID,
-		Title:       dto.Title,
-		Content:     dto.Content,
-		Slug:        dto.Slug,
-		Draft:       dto.Draft,
-		PublishedAt: dto.PublishedAt,
-	}
 }

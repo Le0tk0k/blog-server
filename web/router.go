@@ -9,13 +9,13 @@ import (
 )
 
 // NewServer はhandlerが登録されたechoの構造体を返す
-func NewServer(postService service.PostService, tagService service.TagService) *echo.Echo {
+func NewServer(postService service.PostService, tagService service.TagService, postTagService service.PostTagService) *echo.Echo {
 	e := echo.New()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	postHandler := handler.NewPostHandler(postService)
+	postHandler := handler.NewPostHandler(postService, postTagService)
 	tagHandler := handler.NewTagHandler(tagService)
 
 	v1 := e.Group("/v1")
