@@ -54,9 +54,9 @@ func (p *PostHandler) GetPosts(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	postsJSON := make([]*postJSON, len(posts))
+	postsJSON := make([]*postWithTagsJSON, len(posts))
 	for i, post := range posts {
-		postsJSON[i] = postToJSON(post)
+		postsJSON[i] = postToPostWithTagsJSON(post)
 	}
 
 	return c.JSON(http.StatusOK, postsJSON)

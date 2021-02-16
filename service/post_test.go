@@ -140,6 +140,16 @@ func TestPostService_GetPosts(t *testing.T) {
 		Slug:        "post-slug-1",
 		Draft:       true,
 		PublishedAt: &now,
+		Tags: []*model.Tag{
+			{
+				ID:   "tag_id_1",
+				Name: "tag1",
+			},
+			{
+				ID:   "tag_id_2",
+				Name: "tag2",
+			},
+		},
 	}, {
 		ID:          "post_id_2",
 		Title:       "post_title_2",
@@ -147,6 +157,12 @@ func TestPostService_GetPosts(t *testing.T) {
 		Slug:        "post-slug-2",
 		Draft:       false,
 		PublishedAt: &now,
+		Tags: []*model.Tag{
+			{
+				ID:   "tag_id_1",
+				Name: "tag1",
+			},
+		},
 	}}
 
 	tests := []struct {
@@ -168,6 +184,16 @@ func TestPostService_GetPosts(t *testing.T) {
 					Slug:        "post-slug-1",
 					Draft:       true,
 					PublishedAt: &now,
+					Tags: []*model.Tag{
+						{
+							ID:   "tag_id_1",
+							Name: "tag1",
+						},
+						{
+							ID:   "tag_id_2",
+							Name: "tag2",
+						},
+					},
 				},
 				{
 
@@ -177,6 +203,12 @@ func TestPostService_GetPosts(t *testing.T) {
 					Slug:        "post-slug-2",
 					Draft:       false,
 					PublishedAt: &now,
+					Tags: []*model.Tag{
+						{
+							ID:   "tag_id_1",
+							Name: "tag1",
+						},
+					},
 				},
 			},
 			wantErr: false,

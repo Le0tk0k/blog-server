@@ -57,14 +57,15 @@ func (p *postRepository) FindPostByID(id string) (*model.Post, error) {
 
 // FindAllPosts は全記事を取得する
 func (p *postRepository) FindAllPosts() ([]*model.Post, error) {
-	var dtos []*postDTO
-	if err := p.db.Select(&dtos, "SELECT * FROM posts"); err != nil {
+	var dtos []*postWithTagsDTO
+	query := "SELECT posts.id, posts.title, posts.content, posts.slug, posts.draft, posts.published_at, GROUP_CONCAT(tags.id) AS tag_id, GROUP_CONCAT(tags.name) AS tags FROM posts INNER JOIN posts_tags on posts.id = posts_tags.post_id INNER JOIN tags on posts_tags.tag_id = tags.id GROUP BY posts.id"
+	if err := p.db.Select(&dtos, query); err != nil {
 		return nil, fmt.Errorf("FindAllPosts: cannot find post: %w", err)
 	}
 
 	posts := make([]*model.Post, len(dtos))
 	for i, dto := range dtos {
-		posts[i] = dtoToPost(dto)
+		posts[i] = postWithTagsDTOTOPost(dto)
 	}
 
 	return posts, nil
