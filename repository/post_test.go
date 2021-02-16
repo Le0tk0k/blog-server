@@ -230,23 +230,39 @@ func TestPostRepository_FindAllPosts(t *testing.T) {
 	}
 
 	tests := []struct {
-		name    string
-		wantErr error
+		name       string
+		postCount  int
+		conditions []string
+		wantErr    error
 	}{
 		{
-			name:    "記事を全件取得できる",
-			wantErr: nil,
+			name:       "記事を全件取得できる",
+			postCount:  2,
+			conditions: []string{},
+			wantErr:    nil,
+		},
+		{
+			name:       "クエリパラメータにdraftを設定",
+			postCount:  1,
+			conditions: []string{"draft = true"},
+			wantErr:    nil,
+		},
+		{
+			name:       "クエリパラメータにtagを設定",
+			postCount:  1,
+			conditions: []string{"tags.name = 'tag2'"},
+			wantErr:    nil,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := &postRepository{db: db}
-			got, err := r.FindAllPosts()
+			got, err := r.FindAllPosts(tt.conditions)
 			if !errors.Is(err, tt.wantErr) {
 				t.Errorf("FindAll()  error = %v, wantErr %v", err, tt.wantErr)
 			}
-			if len(got) != len(existsPosts) {
+			if len(got) != tt.postCount {
 				t.Errorf("FindAll() does not fetch all posts got = %v, want = %v", got, existsPosts)
 			}
 		})

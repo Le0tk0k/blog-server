@@ -52,7 +52,17 @@ func (p *PostHandler) GetPost(c echo.Context) error {
 func (p *PostHandler) GetPosts(c echo.Context) error {
 	logger := log.New()
 
-	posts, err := p.postService.GetPosts()
+	conditions := make([]string, 0)
+
+	if draft := c.QueryParam("draft"); draft != "" {
+		conditions = append(conditions, "draft = "+draft)
+	}
+
+	if tag := c.QueryParam("tag"); tag != "" {
+		conditions = append(conditions, "tags.name = '"+tag+"'")
+	}
+
+	posts, err := p.postService.GetPosts(conditions)
 	if err != nil {
 		logger.Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
