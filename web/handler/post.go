@@ -2,9 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"time"
-
-	"github.com/Le0tk0k/blog-server/model"
 
 	"github.com/Le0tk0k/blog-server/log"
 	"github.com/Le0tk0k/blog-server/service"
@@ -14,15 +11,6 @@ import (
 
 type PostHandler struct {
 	postService service.PostService
-}
-
-type postJSON struct {
-	ID          string     `json:"id"`
-	Title       string     `json:"title"`
-	Content     string     `json:"content"`
-	Slug        string     `json:"slug"`
-	Draft       bool       `json:"draft"`
-	PublishedAt *time.Time `json:"published_at"`
 }
 
 // NewPostHandler はPostHandlerを返す
@@ -47,12 +35,18 @@ func (p *PostHandler) GetPost(c echo.Context) error {
 	logger := log.New()
 
 	id := c.Param("id")
-	post, err := p.postService.GetPost(id)
+	post, tags, err := p.postService.GetPost(id)
 	if err != nil {
 		logger.Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
-	return c.JSON(http.StatusOK, postToJSON(post))
+
+	tagsJSON := make([]*tagJSON, len(tags))
+	for i, tag := range tags {
+		tagsJSON[i] = tagToJSON(tag)
+	}
+	res := postWithTagsToPostJSONWithTags(post, tags)
+	return c.JSON(http.StatusOK, res)
 }
 
 // GetPosts は GET /posts に対するhandler
@@ -103,26 +97,4 @@ func (p *PostHandler) DeletePost(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, "successfully deleted")
-}
-
-func postToJSON(post *model.Post) *postJSON {
-	return &postJSON{
-		ID:          post.ID,
-		Title:       post.Title,
-		Content:     post.Content,
-		Slug:        post.Slug,
-		Draft:       post.Draft,
-		PublishedAt: post.PublishedAt,
-	}
-}
-
-func jsonToPOST(json *postJSON) *model.Post {
-	return &model.Post{
-		ID:          json.ID,
-		Title:       json.Title,
-		Content:     json.Content,
-		Slug:        json.Slug,
-		Draft:       json.Draft,
-		PublishedAt: json.PublishedAt,
-	}
 }

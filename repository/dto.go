@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"strings"
 	"time"
 
 	"github.com/Le0tk0k/blog-server/model"
@@ -13,6 +14,17 @@ type postDTO struct {
 	Slug        string     `db:"slug"`
 	Draft       bool       `db:"draft"`
 	PublishedAt *time.Time `db:"published_at"`
+}
+
+type postDTOWithTags struct {
+	ID          string     `db:"id"`
+	Title       string     `db:"title"`
+	Content     string     `db:"content"`
+	Slug        string     `db:"slug"`
+	Draft       bool       `db:"draft"`
+	PublishedAt *time.Time `db:"published_at"`
+	TagIDs      string     `db:"tag_id"`
+	TagNames    string     `db:"tags"`
 }
 
 type tagDTO struct {
@@ -40,6 +52,27 @@ func dtoToPost(dto *postDTO) *model.Post {
 		Draft:       dto.Draft,
 		PublishedAt: dto.PublishedAt,
 	}
+}
+
+func postDTOWithTagsTOPostAndTags(dto *postDTOWithTags) (*model.Post, []*model.Tag) {
+	post := &model.Post{
+		ID:          dto.ID,
+		Title:       dto.Title,
+		Content:     dto.Content,
+		Slug:        dto.Slug,
+		Draft:       dto.Draft,
+		PublishedAt: dto.PublishedAt,
+	}
+	tagIDs := strings.Split(dto.TagIDs, ",")
+	tagNames := strings.Split(dto.TagNames, ",")
+	tags := make([]*model.Tag, len(tagIDs))
+	for i := 0; i < len(tagIDs); i++ {
+		tags[i] = &model.Tag{
+			ID:   tagIDs[i],
+			Name: tagNames[i],
+		}
+	}
+	return post, tags
 }
 
 func tagToDTO(tag *model.Tag) *tagDTO {

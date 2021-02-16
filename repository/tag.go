@@ -21,11 +21,6 @@ type tagRepository struct {
 	db *sqlx.DB
 }
 
-type tagDTO struct {
-	ID   string `db:"id"`
-	Name string `db:"name"`
-}
-
 func NewTagRepository(db *sqlx.DB) TagRepository {
 	return &tagRepository{db: db}
 }
@@ -80,18 +75,4 @@ func (t *tagRepository) DeleteTagByID(id string) error {
 		return fmt.Errorf("DeleteTabByID: cannot delete tag: %w", err)
 	}
 	return nil
-}
-
-func tagToDTO(tag *model.Tag) *tagDTO {
-	return &tagDTO{
-		ID:   tag.ID,
-		Name: tag.Name,
-	}
-}
-
-func dtoToTag(dto *tagDTO) *model.Tag {
-	return &model.Tag{
-		ID:   dto.ID,
-		Name: dto.Name,
-	}
 }

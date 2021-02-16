@@ -10,7 +10,7 @@ import (
 
 type PostService interface {
 	CreatePost() (*model.Post, error)
-	GetPost(id string) (*model.Post, error)
+	GetPost(id string) (*model.Post, []*model.Tag, error)
 	GetPosts() ([]*model.Post, error)
 	UpdatePost(post *model.Post) error
 	DeletePost(id string) error
@@ -35,12 +35,12 @@ func (p *postService) CreatePost() (*model.Post, error) {
 }
 
 // GetPost はidを持つ記事を取得する
-func (p *postService) GetPost(id string) (*model.Post, error) {
-	post, err := p.postRepository.FindPostByID(id)
+func (p *postService) GetPost(id string) (*model.Post, []*model.Tag, error) {
+	post, tags, err := p.postRepository.FindPostByID(id)
 	if err != nil {
-		return nil, fmt.Errorf("GetPost: cannot get post: %w", err)
+		return nil, nil, fmt.Errorf("GetPost: cannot get post: %w", err)
 	}
-	return post, nil
+	return post, tags, nil
 }
 
 // GetPosts は全記事を取得する
@@ -57,7 +57,7 @@ func (p *postService) UpdatePost(post *model.Post) error {
 	// TODO その他バリデーション、必要に応じて
 
 	// 更新対象の記事を取得
-	targetPost, err := p.postRepository.FindPostByID(post.ID)
+	targetPost, _, err := p.postRepository.FindPostByID(post.ID)
 	if err != nil {
 		return fmt.Errorf("UpdatePost: cannot find target post: %w", err)
 	}
