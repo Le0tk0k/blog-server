@@ -64,18 +64,18 @@ func (mr *MockPostServiceMockRecorder) GetPost(id interface{}) *gomock.Call {
 }
 
 // GetPosts mocks base method
-func (m *MockPostService) GetPosts() ([]*model.Post, error) {
+func (m *MockPostService) GetPosts(conditions []string) ([]*model.Post, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPosts")
+	ret := m.ctrl.Call(m, "GetPosts", conditions)
 	ret0, _ := ret[0].([]*model.Post)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetPosts indicates an expected call of GetPosts
-func (mr *MockPostServiceMockRecorder) GetPosts() *gomock.Call {
+func (mr *MockPostServiceMockRecorder) GetPosts(conditions interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPosts", reflect.TypeOf((*MockPostService)(nil).GetPosts))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPosts", reflect.TypeOf((*MockPostService)(nil).GetPosts), conditions)
 }
 
 // UpdatePost mocks base method

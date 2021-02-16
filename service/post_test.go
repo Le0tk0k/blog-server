@@ -168,14 +168,16 @@ func TestPostService_GetPosts(t *testing.T) {
 	tests := []struct {
 		name                  string
 		prepareMockPostRepoFn func(mock *mock_repository.MockPostRepository)
+		conditions            []string
 		want                  []*model.Post
 		wantErr               bool
 	}{
 		{
 			name: "全記事を返す",
 			prepareMockPostRepoFn: func(mock *mock_repository.MockPostRepository) {
-				mock.EXPECT().FindAllPosts().Return(existsPosts, nil)
+				mock.EXPECT().FindAllPosts(gomock.Any()).Return(existsPosts, nil)
 			},
+			conditions: []string{},
 			want: []*model.Post{
 				{
 					ID:          "post_id_1",
@@ -214,12 +216,121 @@ func TestPostService_GetPosts(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "公開記事を返す",
+			prepareMockPostRepoFn: func(mock *mock_repository.MockPostRepository) {
+				mock.EXPECT().FindAllPosts(gomock.Any()).Return([]*model.Post{
+					{
+						ID:          "post_id_2",
+						Title:       "post_title_2",
+						Content:     "post_content_2",
+						Slug:        "post-slug-2",
+						Draft:       false,
+						PublishedAt: &now,
+						Tags: []*model.Tag{
+							{
+								ID:   "tag_id_1",
+								Name: "tag1",
+							},
+						},
+					},
+				}, nil)
+			},
+			conditions: []string{"draft = false"},
+			want: []*model.Post{
+				{
+
+					ID:          "post_id_2",
+					Title:       "post_title_2",
+					Content:     "post_content_2",
+					Slug:        "post-slug-2",
+					Draft:       false,
+					PublishedAt: &now,
+					Tags: []*model.Tag{
+						{
+							ID:   "tag_id_1",
+							Name: "tag1",
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "タグによって取得",
+			prepareMockPostRepoFn: func(mock *mock_repository.MockPostRepository) {
+				mock.EXPECT().FindAllPosts(gomock.Any()).Return([]*model.Post{
+					{
+						ID:          "post_id_1",
+						Title:       "post_title_1",
+						Content:     "pot_content_1",
+						Slug:        "post-slug-1",
+						Draft:       true,
+						PublishedAt: &now,
+						Tags: []*model.Tag{
+							{
+								ID:   "tag_id_1",
+								Name: "tag1",
+							},
+						},
+					},
+					{
+						ID:          "post_id_2",
+						Title:       "post_title_2",
+						Content:     "post_content_2",
+						Slug:        "post-slug-2",
+						Draft:       false,
+						PublishedAt: &now,
+						Tags: []*model.Tag{
+							{
+								ID:   "tag_id_1",
+								Name: "tag1",
+							},
+						},
+					},
+				}, nil)
+			},
+			conditions: []string{"tags.name = 'tag_id_1'"},
+			want: []*model.Post{
+				{
+					ID:          "post_id_1",
+					Title:       "post_title_1",
+					Content:     "pot_content_1",
+					Slug:        "post-slug-1",
+					Draft:       true,
+					PublishedAt: &now,
+					Tags: []*model.Tag{
+						{
+							ID:   "tag_id_1",
+							Name: "tag1",
+						},
+					},
+				},
+				{
+
+					ID:          "post_id_2",
+					Title:       "post_title_2",
+					Content:     "post_content_2",
+					Slug:        "post-slug-2",
+					Draft:       false,
+					PublishedAt: &now,
+					Tags: []*model.Tag{
+						{
+							ID:   "tag_id_1",
+							Name: "tag1",
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
 			name: "記事の取得に失敗したときエラーを返す",
 			prepareMockPostRepoFn: func(mock *mock_repository.MockPostRepository) {
-				mock.EXPECT().FindAllPosts().Return(nil, errors.New("error"))
+				mock.EXPECT().FindAllPosts(gomock.Any()).Return(nil, errors.New("error"))
 			},
-			want:    nil,
-			wantErr: true,
+			conditions: []string{},
+			want:       nil,
+			wantErr:    true,
 		},
 	}
 
@@ -233,7 +344,7 @@ func TestPostService_GetPosts(t *testing.T) {
 				postRepository: mr,
 			}
 
-			got, err := ps.GetPosts()
+			got, err := ps.GetPosts(tt.conditions)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetPosts() error = %v, wantErr = %v", err, tt.wantErr)
 			}

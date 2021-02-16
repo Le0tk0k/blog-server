@@ -184,7 +184,7 @@ func TestPostHandler_GetPosts(t *testing.T) {
 		{
 			name: "正常に記事を取得できたときは200を返す",
 			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
-				mock.EXPECT().GetPosts().Return(existsPosts, nil)
+				mock.EXPECT().GetPosts(gomock.Any()).Return(existsPosts, nil)
 			},
 			wantErr:  false,
 			wantCode: http.StatusOK,
@@ -192,7 +192,7 @@ func TestPostHandler_GetPosts(t *testing.T) {
 		{
 			name: "記事が0件でもエラーにならずに200を返す",
 			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
-				mock.EXPECT().GetPosts().Return(nil, nil)
+				mock.EXPECT().GetPosts(gomock.Any()).Return(nil, nil)
 			},
 			wantErr:  false,
 			wantCode: http.StatusOK,
@@ -200,7 +200,7 @@ func TestPostHandler_GetPosts(t *testing.T) {
 		{
 			name: "記事の取得に失敗した場合は500を返す",
 			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
-				mock.EXPECT().GetPosts().Return(nil, errors.New("error"))
+				mock.EXPECT().GetPosts(gomock.Any()).Return(nil, errors.New("error"))
 			},
 			wantErr:  true,
 			wantCode: http.StatusInternalServerError,

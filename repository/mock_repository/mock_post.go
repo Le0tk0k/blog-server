@@ -63,18 +63,18 @@ func (mr *MockPostRepositoryMockRecorder) FindPostByID(id interface{}) *gomock.C
 }
 
 // FindAllPosts mocks base method
-func (m *MockPostRepository) FindAllPosts() ([]*model.Post, error) {
+func (m *MockPostRepository) FindAllPosts(conditions []string) ([]*model.Post, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAllPosts")
+	ret := m.ctrl.Call(m, "FindAllPosts", conditions)
 	ret0, _ := ret[0].([]*model.Post)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindAllPosts indicates an expected call of FindAllPosts
-func (mr *MockPostRepositoryMockRecorder) FindAllPosts() *gomock.Call {
+func (mr *MockPostRepositoryMockRecorder) FindAllPosts(conditions interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllPosts", reflect.TypeOf((*MockPostRepository)(nil).FindAllPosts))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllPosts", reflect.TypeOf((*MockPostRepository)(nil).FindAllPosts), conditions)
 }
 
 // UpdatePost mocks base method
