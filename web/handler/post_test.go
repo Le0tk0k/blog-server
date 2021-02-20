@@ -91,14 +91,14 @@ func TestPostHandler_GetPost(t *testing.T) {
 
 	tests := []struct {
 		name                     string
-		id                       string
+		slug                     string
 		prepareMockPostServiceFn func(mock *mock_service.MockPostService)
 		wantErr                  bool
 		wantCode                 int
 	}{
 		{
 			name: "正常に記事を取得できたときは200を返す",
-			id:   "post_id_1",
+			slug: "post-slug-1",
 			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
 				mock.EXPECT().GetPost(gomock.Any()).Return(existsPost, nil)
 			},
@@ -107,7 +107,7 @@ func TestPostHandler_GetPost(t *testing.T) {
 		},
 		{
 			name: "記事の取得に失敗した場合は500を返す",
-			id:   "not_found",
+			slug: "not_found",
 			prepareMockPostServiceFn: func(mock *mock_service.MockPostService) {
 				mock.EXPECT().GetPost(gomock.Any()).Return(nil, errors.New("error"))
 			},
@@ -125,7 +125,7 @@ func TestPostHandler_GetPost(t *testing.T) {
 			ph := &PostHandler{postService: ms}
 
 			e := echo.New()
-			r := httptest.NewRequest(http.MethodGet, "/v1/posts/"+tt.id, nil)
+			r := httptest.NewRequest(http.MethodGet, "/v1/posts/"+tt.slug, nil)
 			r.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			w := httptest.NewRecorder()
 			c := e.NewContext(r, w)

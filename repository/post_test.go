@@ -175,6 +175,104 @@ func TestPostRepository_FindPostByID(t *testing.T) {
 	}
 }
 
+func TestPostRepository_FindPostBySlug(t *testing.T) {
+
+	existPost := &postDTO{
+		ID:      "post_id_1",
+		Title:   "post_title_1",
+		Content: "pot_content_1",
+		Slug:    "post-slug-1",
+		Draft:   true,
+		// TODO mysqlとgoで時間の表示形式が違う
+		PublishedAt: nil,
+	}
+	_, err := db.Exec("INSERT INTO posts VALUES (?, ?, ?, ?, ?, ?)", existPost.ID, existPost.Title, existPost.Content, existPost.Slug, existPost.Draft, existPost.PublishedAt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	existTags := []*tagDTO{
+		{
+			ID:   "tag_id_1_post_test",
+			Name: "tag1",
+		},
+		{
+			ID:   "tag_id_2_post_test",
+			Name: "tag2",
+		},
+	}
+	tmp := []string{"1", "2"}
+	for i, tag := range existTags {
+		_, err = db.Exec("INSERT INTO tags VALUES (?, ?)", tag.ID, tag.Name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// TODO posts_tags 実装後リファクタリング
+		_, err = db.Exec("INSERT INTO posts_tags VALUES (?, ?, ?)", tmp[i], existPost.ID, tag.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	tests := []struct {
+		name    string
+		slug    string
+		want    *model.Post
+		wantErr error
+	}{
+		{
+			name: "存在する記事を正常に取得できる",
+			slug: "post-slug-1",
+			want: &model.Post{
+				ID:          "post_id_1",
+				Title:       "post_title_1",
+				Content:     "pot_content_1",
+				Slug:        "post-slug-1",
+				Draft:       true,
+				PublishedAt: nil,
+				Tags: []*model.Tag{
+					{
+						ID:   "tag_id_1_post_test",
+						Name: "tag1",
+					},
+					{
+						ID:   "tag_id_2_post_test",
+						Name: "tag2",
+					},
+				},
+			},
+			wantErr: nil,
+		},
+		{
+			name:    "存在しないIDの場合ErrPostNotFoundを返す",
+			slug:    "not_found",
+			want:    nil,
+			wantErr: model.ErrPostNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &postRepository{db: db}
+			got, err := r.FindPostBySlug(tt.slug)
+			if !errors.Is(err, tt.wantErr) {
+				t.Errorf("FindPostBySlug()  error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("FindPostBySlug() got = %v, want = %v", got, tt.want)
+			}
+		})
+	}
+
+	_, err = db.Exec("DELETE FROM posts")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = db.Exec("DELETE FROM tags")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestPostRepository_FindAllPosts(t *testing.T) {
 	now := time.Now()
 

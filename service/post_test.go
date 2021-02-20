@@ -68,16 +68,16 @@ func TestPostService_GetPost(t *testing.T) {
 
 	tests := []struct {
 		name                  string
-		id                    string
+		slug                  string
 		prepareMockPostRepoFn func(mock *mock_repository.MockPostRepository)
 		want                  *model.Post
 		wantErr               bool
 	}{
 		{
 			name: "記事を返す",
-			id:   "post_id_1",
+			slug: "post-slug-1",
 			prepareMockPostRepoFn: func(mock *mock_repository.MockPostRepository) {
-				mock.EXPECT().FindPostByID("post_id_1").Return(existsPost, nil)
+				mock.EXPECT().FindPostBySlug("post-slug-1").Return(existsPost, nil)
 			},
 			want: &model.Post{
 				ID:          "post_id_1",
@@ -101,9 +101,9 @@ func TestPostService_GetPost(t *testing.T) {
 		},
 		{
 			name: "記事の取得に失敗したときエラーを返す",
-			id:   "not_found",
+			slug: "not_found",
 			prepareMockPostRepoFn: func(mock *mock_repository.MockPostRepository) {
-				mock.EXPECT().FindPostByID("not_found").Return(nil, errors.New("error"))
+				mock.EXPECT().FindPostBySlug("not_found").Return(nil, errors.New("error"))
 			},
 			want:    nil,
 			wantErr: true,
@@ -120,7 +120,7 @@ func TestPostService_GetPost(t *testing.T) {
 				postRepository: mr,
 			}
 
-			got, err := ps.GetPost(tt.id)
+			got, err := ps.GetPost(tt.slug)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetPost() error = %v, wantErr = %v", err, tt.wantErr)
 			}

@@ -62,6 +62,21 @@ func (mr *MockPostRepositoryMockRecorder) FindPostByID(id interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindPostByID", reflect.TypeOf((*MockPostRepository)(nil).FindPostByID), id)
 }
 
+// FindPostBySlug mocks base method
+func (m *MockPostRepository) FindPostBySlug(slug string) (*model.Post, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindPostBySlug", slug)
+	ret0, _ := ret[0].(*model.Post)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindPostBySlug indicates an expected call of FindPostBySlug
+func (mr *MockPostRepositoryMockRecorder) FindPostBySlug(slug interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindPostBySlug", reflect.TypeOf((*MockPostRepository)(nil).FindPostBySlug), slug)
+}
+
 // FindAllPosts mocks base method
 func (m *MockPostRepository) FindAllPosts(conditions []string) ([]*model.Post, error) {
 	m.ctrl.T.Helper()
