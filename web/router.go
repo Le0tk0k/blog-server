@@ -25,10 +25,10 @@ func NewServer(postService service.PostService, tagService service.TagService, p
 
 	posts := v1.Group("/posts")
 	posts.GET("", postHandler.GetPosts)
-	posts.GET("/:slug", postHandler.GetPost)
-	posts.POST("", postHandler.CreatePost)
+	posts.GET("/:id", postHandler.GetPost)
 	posts.PUT("/:id", postHandler.UpdatePost)
 	posts.DELETE("/:id", postHandler.DeletePost)
+	posts.POST("", postHandler.CreatePost)
 
 	tags := v1.Group("/tags")
 	tags.POST("", tagHandler.CreateTag)
