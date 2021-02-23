@@ -21,9 +21,9 @@ type Post struct {
 func NewPost() *Post {
 	return &Post{
 		ID:      uuid.New().String(),
-		Title:   "",
-		Content: "",
-		Slug:    "",
+		Title:   "new post title",
+		Content: "new post content",
+		Slug:    "new-post-slug",
 		Draft:   true,
 	}
 }
