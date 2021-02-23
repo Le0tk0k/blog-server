@@ -1,6 +1,7 @@
 package web
 
 import (
+	"github.com/Le0tk0k/blog-server/config"
 	"github.com/Le0tk0k/blog-server/service"
 	"github.com/Le0tk0k/blog-server/web/handler"
 
@@ -15,8 +16,10 @@ func NewServer(postService service.PostService, tagService service.TagService, p
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	// TODO フロント作ってからちゃんと設定する
-	e.Use(middleware.CORS())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{config.CORSAllowOrigin()},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
 
 	postHandler := handler.NewPostHandler(postService, postTagService)
 	tagHandler := handler.NewTagHandler(tagService)
