@@ -35,7 +35,9 @@ func main() {
 	tagService := service.NewTagService(tagRepository)
 	postTagRepository := repository.NewPostTagRepository(db)
 	postTagService := service.NewPostTagService(postTagRepository)
-	e := web.NewServer(postService, tagService, postTagService)
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
+	e := web.NewServer(postService, tagService, postTagService, userService)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }
