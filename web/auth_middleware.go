@@ -5,8 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/Le0tk0k/blog-server/config"
-
 	"github.com/dgrijalva/jwt-go"
 
 	"golang.org/x/crypto/bcrypt"
@@ -52,18 +50,19 @@ func (m *AuthMiddleware) Login(c echo.Context) error {
 
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+	claims["exp"] = time.Now().Add(time.Hour).Unix()
 	t, err := token.SignedString([]byte(os.Getenv("AUTH_KEY")))
 	if err != nil {
 		logger.Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 	c.SetCookie(&http.Cookie{
-		Name:     "jwt",
-		Value:    t,
-		Path:     "/",
-		MaxAge:   60 * 60 * 24,
-		Secure:   !config.IsLocal(),
+		Name:   "jwt",
+		Value:  t,
+		Path:   "/",
+		MaxAge: 60 * 60,
+		// Todo デプロイしてからどうにかする
+		Secure:   false,
 		HttpOnly: true,
 		SameSite: http.SameSiteNoneMode,
 	})
