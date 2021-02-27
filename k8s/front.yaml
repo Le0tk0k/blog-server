@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-front
+  labels:
+    app: blog-front
+spec:
+  selector:
+    app: blog-front
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-front
+  labels:
+    name: blog-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog-front
+  template:
+    metadata:
+      labels:
+        app: blog-front
+    spec:
+      containers:
+        - name: blog-front
+          image: le0tk0k/sample:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_APP_API_BASE_URL
+              value: http://blog-server
