@@ -60,6 +60,7 @@ func (m *AuthMiddleware) Login(c echo.Context) error {
 		Name:   "jwt",
 		Value:  t,
 		Path:   "/",
+		Domain: "blog-server",
 		MaxAge: 60 * 60,
 		// Todo デプロイしてからどうにかする
 		Secure:   false,
